@@ -4,9 +4,24 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import ContactSection from './ContactSection.vue';
 import 'animate.css';
+import { computed } from 'vue'
+const name1 = localStorage.getItem("account")
+const data = ref([])
+onMounted(async () => {
+    const res = await axios.get(`http://localhost:8080/api/infor/${name1}`)
+    data.value = res.data
+})
+
+const grandTotal = computed(() => {
+    return data.value.reduce((sum, item) => {
+        return sum + Math.floor(item.menu.price) * item.total
+    }, 0)
+})
+const checkcart = ref(null)
 const name = ref('')
 const check = ref(false)
 const showPanel = ref(false)
+const showCart = ref(false)
 const activeDropdown = ref('')
 const type1 = localStorage.getItem("name")
 const account = localStorage.getItem("account")
@@ -23,6 +38,17 @@ if (type1) {
                 }
             })
         })
+    }
+}
+function handleCart() {
+    if (checkcart.value) {
+        checkcart.value = false // chuyển sang fadeOut
+        setTimeout(() => {
+            showCart.value = false // ẩn hẳn sau khi chạy xong animation
+        }, 500) // 500ms là thời gian animation animate.css
+    } else {
+        showCart.value = true // hiện lại
+        checkcart.value = true // áp dụng fadeIn
     }
 }
 function handleCheck() {
@@ -78,8 +104,8 @@ function handleDropdown(type, isEnter) {
                     <span class="text-xs text-gray-500 uppercase">Respondent</span>
                 </div>
             </div>
-            <button class="text-white bg-red-500 p-2 rounded-full" @click="handleCheck">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+            <button class="text-white bg-red-500 p-2 rounded-full " @click="handleCheck">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-8" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -168,7 +194,7 @@ function handleDropdown(type, isEnter) {
             </div>
             <div style="color: white;" class="flex md:px-11 px-5 mt-7 justify-end items-center">
                 <span class="2xl:flex items-center hidden" style="width: 70.8%; height: 36px;">
-                    <ul class="flex gap-8 font-bold  relative">
+                    <ul class="flex gap-8 font-bold  relative" style="margin-bottom: 0;"> 
                         <li class="relative" @mouseover=" handleDropdown('home', true)"
                             @mouseleave=" handleDropdown('home', false)">
                             <div class="flex items-center h-[70px]">
@@ -176,7 +202,7 @@ function handleDropdown(type, isEnter) {
                                 <i class="ml-3 fa-solid fa-plus"></i>
                             </div>
                             <div v-if="activeDropdown === 'home'"
-                                class="absolute w-100  top-15 left-10 animate__animated z-2 animate__slideInUp "
+                                class="absolute w-100  top-15 left-10 animate__animated z-2 animate__slideInUp animate__faster"
                                 style="background-color: white;">
                                 <a href="/aboutus" @mouseleave=" handleDropdown('home', false)">
                                     <img width="800" class="px-6 py-7"
@@ -186,14 +212,13 @@ function handleDropdown(type, isEnter) {
                                 <div class="text-center py-2" style="color: black;">Home</div>
                             </div>
                         </li>
-                        <li @mouseover=" handleDropdown('about', true)">
+                        <li @mouseover=" handleDropdown('about', true)" @mouseleave=" handleDropdown('about', false)">
                             <div class="flex items-center h-[70px]">
                                 About Us
                                 <i class="ml-3 fa-solid fa-plus"></i>
                             </div>
-                            <div class="absolute  top-16 left-30 animate__animated z-2 animate__slideInUp  "
-                                @mouseleave=" handleDropdown('about', false)" v-if="activeDropdown === 'about'"
-                                style="background-color: white;">
+                            <div class="absolute  top-16 left-30 animate__animated z-2 animate__slideInUp  animate__faster"
+                                v-if="activeDropdown === 'about'" style="background-color: white;">
                                 <a href="/aboutus">
                                     <div class="content w-50 px-4 py-3">
                                         About Us
@@ -201,13 +226,13 @@ function handleDropdown(type, isEnter) {
                                 </a>
                             </div>
                         </li>
-                        <li @mouseover=" handleDropdown('shop', true)" class="flex items-center">
+                        <li @mouseover=" handleDropdown('shop', true)" class="flex items-center"
+                            @mouseleave=" handleDropdown('shop', false)">
                             <div>
                                 Shop
                             </div><i class="ml-3 fa-solid fa-plus"></i>
-                            <div class="absolute  top-16 left-60 animate__animated z-2 animate__slideInUp "
-                                @mouseleave=" handleDropdown('shop', false)" v-if="activeDropdown === 'shop'"
-                                style="background-color: white;">
+                            <div class="absolute  top-16 left-60 animate__animated z-2 animate__slideInUp animate__faster"
+                                v-if="activeDropdown === 'shop'" style="background-color: white;">
                                 <a href="/shop">
                                     <div class="content w-50 px-4 py-3">
                                         Shop
@@ -215,13 +240,13 @@ function handleDropdown(type, isEnter) {
                                 </a>
                             </div>
                         </li>
-                        <li @mouseover=" handleDropdown('add', true)" class="flex items-center">
+                        <li @mouseover=" handleDropdown('add', true)" class="flex items-center"
+                            @mouseleave=" handleDropdown('add', false)">
                             <div>
                                 Page
                             </div><i class="ml-3 fa-solid fa-plus"></i>
-                            <div class="absolute  top-16 left-90 animate__animated z-2 animate__slideInUp "
-                                @mouseleave=" handleDropdown('add', false)" v-if="activeDropdown === 'add'"
-                                style="background-color: white;">
+                            <div class="absolute  top-16 left-90 animate__animated z-2 animate__slideInUp animate__faster"
+                                v-if="activeDropdown === 'add'" style="background-color: white;">
                                 <a href="/account">
                                     <div class="content w-50 px-4 py-3">
                                         Account
@@ -266,12 +291,48 @@ function handleDropdown(type, isEnter) {
                 <div style="color: #5C6574;" class="sm:w-[340px] flex w-70 xl:pr-8 items-center">
                     <div :class="name != '' ? 'yes' : 'login'"
                         class="flex md:w-90 xl:justify-around justify-end mr-3 flex">
-                        <div class="text-[18px] mr-1">{{ name }}</div>
+                        <a href="/infor"><div class="text-[18px] mr-1">{{ name }}</div></a>
                         <div class="text-[18px]" @click="handleLogout()" style="cursor: pointer;">Logout</div>
                     </div>
-                    <ul class="flex lg:justify-around justify-end w-40">
+                    <ul class="flex lg:justify-around justify-end w-40 mb-0 relative" style="margin-bottom: 0;">
                         <li class="pr-5 text-[20px]"><i class="fa-solid fa-magnifying-glass"></i></li>
-                        <li class="pr-5 text-[20px]"><i class="fa-solid fa-cart-shopping"></i></li>
+                        <li class="pr-5 text-[20px] " @click="handleCart"><i class="fa-solid fa-cart-shopping"></i>
+                            <div v-if="checkcart">
+                                <div class="w-80 mx-auto p-4 bg-white rounded shadow absolute z-2 right-0 top-10 animate__animated animate__fadeIn">
+                                    <!-- Cart Items -->
+                                    <div v-for="(item, index) in data" :key="index"
+                                        class="flex items-center gap-4 py-3 border-b last:border-none">
+                                        <img :src="item.menu.img" alt="item image"
+                                            class="w-16 h-16 rounded-md object-cover" />
+                                        <div class="flex-1">
+                                            <h3 class="text-black font-semibold">{{ item.menu.name }}</h3>
+                                            <p class="text-sm text-gray-500">
+                                                {{ item.total }} x <span class="text-orange-500 font-semibold">$ {{
+                                                    Math.floor(item.menu.price)
+                                                }}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <!-- Total -->
+                                    <div class="flex justify-between items-center py-4 mt-4">
+                                        <span class="text-lg font-semibold text-gray-700">Total:</span>
+                                        <span class="text-xl font-bold text-orange-500">${{
+                                            grandTotal.toLocaleString(undefined, {
+                                                minimumFractionDigits: 2
+                                            }) }}</span>
+                                    </div>
+                                    <div class="text-center relative pb-5 ">
+                                        <a href="/cart">
+                                            <button class="px-5 py-3 w-full">
+                                                <span class="relative z-10 text-[14px] font-bold">View Cart</span>
+                                                <div class="box-1"></div>
+                                                <div class="box-2"></div>
+                                            </button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
                         <li @click="handleCheck" class="xl:pr-5 text-[20px] cursor-pointer"><i
                                 class="fa-solid fa-bars"></i></li>
                     </ul>
@@ -279,9 +340,79 @@ function handleDropdown(type, isEnter) {
             </div>
         </div>
     </div>
+
 </template>
 
 <style scoped>
+button {
+    background: #EB0029;
+    color: white;
+    height: 50px;
+    position: relative;
+    overflow: hidden;
+    z-index: 5;
+    cursor: pointer;
+}
+
+button button,
+button i {
+    position: relative;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.box-1 {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.box-1::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    height: 100%;
+    background: #FC781A;
+    transition: right 0.5s ease;
+}
+
+.box-2 {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.box-2::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: #FC781A;
+    transition: left 0.5s ease;
+}
+
+button:hover {
+    border: 1px solid red;
+}
+
+button:hover .box-1::before {
+    right: 0;
+}
+
+button:hover .box-2::before {
+    left: 0;
+}
+
 .content {
     background: white;
     color: black;

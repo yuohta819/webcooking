@@ -26,6 +26,7 @@ public class DBConnectAccount {
     private DataRepositoryInfor connectinfor;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @GetMapping("/check")
     @CrossOrigin(origins = "http://localhost:5173")
     public List<DBAccount> getMethodName(@RequestParam String account, @RequestParam String password) {
@@ -82,4 +83,13 @@ public class DBConnectAccount {
         return false;
     }
 
+    public Long getId(String account) {
+        List<DBAccount> list = connect.findAll();
+        for (DBAccount x : list) {
+            if (x.getUsername().equals(account)) {
+                return x.getAccountid();
+            }
+        }
+        return null;
+    }
 }

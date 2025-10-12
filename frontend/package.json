@@ -13,7 +13,7 @@
     "animate.css": "^4.1.1",
     "ant-design-vue": "^4.2.6",
     "axios": "^1.9.0",
-    "simplebar": "^6.3.1",
+    "simplebar": "^5.3.9",
     "swiper": "^11.2.8",
     "tailwind-scrollbar": "^4.0.2",
     "vue": "^3.5.13",

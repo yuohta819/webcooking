@@ -13,4 +13,6 @@ public interface DataRepositoryAccount extends JpaRepository<DBAccount, Long> {
     List<DBAccount> findAll();
     @Query("SELECT a FROM DBAccount a WHERE a.id = :id")
     List<DBAccount> findAllInfor(@Param("id")  Long id);
+    @Query("SELECT a FROM DBAccount a WHERE a.username = :username")
+    List<DBAccount> findId(@Param("username") String username);
 }

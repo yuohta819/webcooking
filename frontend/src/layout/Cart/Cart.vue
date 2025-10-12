@@ -2,14 +2,13 @@
 
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { computed } from 'vue'
 import { useToast } from "vue-toastification";
-const router = useRoute()
 const name = localStorage.getItem("account")
 const data = ref([])
-const count = ref(1)
 const toast = useToast();
+const route = useRouter()
 onMounted(async () => {
     const res = await axios.get(`http://localhost:8080/api/infor/${name}`)
     data.value = res.data
@@ -30,6 +29,34 @@ function handleCount(item, name) {
         }
     }
 }
+const productIds = computed(() => {
+    return data.value.map(item => item.menu.id);
+});
+const productMoney = computed(() => {
+
+    return data.value.map(item => item.menu.price * item.total);
+});
+const account = localStorage.getItem("account")
+async function handleBill() {
+    if (!account) {
+        toast.warning("Please login to your account.")
+        return;
+    }
+    const res = await axios.post("http://localhost:8080/status/save", {
+        account: name,
+        status: productIds.value,   // mảng ID
+        money: productMoney.value
+    })
+    toast.success("Order successful!")
+    setTimeout(() => {
+        route.push('/').then(() => {
+            window.location.reload()
+        })
+    }, 2000)
+
+
+}
+
 async function removeItem(id) {
     const res = await axios.get(`http://localhost:8080/api/delete/${id}`)
     if (res) {
@@ -37,7 +64,7 @@ async function removeItem(id) {
     }
     setTimeout(() => {
         location.reload()
-    },1000)
+    }, 1000)
 }
 </script>
 <template>
@@ -63,7 +90,9 @@ async function removeItem(id) {
             <tbody class="bg-white">
                 <tr v-for="(item, index) in data" :key="index">
                     <td class="xl:p-4 py-5 xl:block hidden">
-                        <img :src="item.menu.img" alt="menu-img" style="width: 85px !important; height: 80px !important;" class="h-20 rounded-lg object-cover mx-auto" />
+                        <img :src="item.menu.img" alt="menu-img"
+                            style="width: 85px !important; height: 80px !important;"
+                            class="h-20 rounded-lg object-cover mx-auto" />
                     </td>
                     <td class="p-4 text-gray-700 text-[18px]" style="color: #5C6574;">{{ item.menu.name }}</td>
                     <td class="p-4 font-semibold text-gray-900 text-[20px]">${{ Math.floor(item.menu.price) }}</td>
@@ -71,7 +100,9 @@ async function removeItem(id) {
                         <div class="flex items-center justify-center space-x-2">
                             <button @click="handleCount(item, 'desc')"
                                 class="border px-2 py-1 rounded hover:bg-gray-200">−</button>
-                            <div class="min-w-[30px] px-7 py-1 font-bold" style="border: 1px solid #D2D2D1; color: #EB0029;">{{ item.total }}</div>
+                            <div class="min-w-[30px] px-7 py-1 font-bold"
+                                style="border: 1px solid #D2D2D1; color: #EB0029; margin-right: 0;">{{ item.total }}
+                            </div>
                             <button @click="handleCount(item, 'asc')"
                                 class="border px-2 py-1 rounded hover:bg-gray-200">+</button>
                         </div>
@@ -79,8 +110,8 @@ async function removeItem(id) {
                     <td class="p-4 font-semibold text-gray-900">
                         ${{ Math.floor(item.menu.price) * item.total }}
                     </td>
-                    <td class="p-4" style="cursor: pointer;" @click="removeItem(item.menu.id)" >
-                        <button  style="cursor: pointer;" class="text-red-500 hover:scale-110 transition">
+                    <td class="p-4" style="cursor: pointer;" @click="removeItem(item.menu.id)">
+                        <button style="cursor: pointer;" class="text-red-500 hover:scale-110 transition">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </td>
@@ -89,7 +120,7 @@ async function removeItem(id) {
         </table>
     </div>
     <div class="max-w-2xl mx-auto py-30">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Cart Totals</h2>
+        <h2 class="text-2xl font-semibold text-gray-700 amb-4">Cart Totals</h2>
         <div class="border grid grid-cols-2 ">
             <!-- Left -->
             <div class="p-6 space-y-6 text-left font-semibold text-gray-700">
@@ -101,7 +132,7 @@ async function removeItem(id) {
             <!-- Right -->
             <div class="p-6 space-y-6">
                 <!-- Subtotal -->
-                <div class="text-gray-900 font-semibold">$54</div>
+                <div class="text-gray-900 font-semibold">${{ grandTotal }}</div>
 
                 <!-- Shipping options -->
                 <div class="space-y-2">
@@ -120,19 +151,92 @@ async function removeItem(id) {
                 </div>
 
                 <!-- Order total -->
-                <div class="text-red-600 font-bold text-lg">${{ grandTotal }}</div>
+                <div class="text-red-600 font-bold text-lg">${{ grandTotal + 20 }}</div>
             </div>
         </div>
 
         <!-- Checkout button -->
-        <div class="mt-6">
-            <button class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 w-full">
-                Proceed to checkout
-            </button>
+        <div class="box-5">
+            <div class="text-center relative pb-5 mt-5">
+                <button class="px-5 py-3 w-full" @click="handleBill">
+                    <span class="relative z-10 text-[14px] font-bold">Order</span>
+                    <div class="box-1"></div>
+                    <div class="box-2"></div>
+                </button>
+            </div>
         </div>
     </div>
 </template>
 <style scoped>
+.box-5 button {
+    background: #EB0029;
+    color: white;
+    height: 50px;
+    position: relative;
+    overflow: hidden;
+    z-index: 5;
+    cursor: pointer;
+}
+
+.box-5 button button,
+.box-5 button i {
+    position: relative;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.box-5 .box-1 {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.box-5 .box-1::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    height: 100%;
+    background: #FC781A;
+    transition: right 0.5s ease;
+}
+
+.box-5 .box-2 {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.box-5 .box-2::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: #FC781A;
+    transition: left 0.5s ease;
+}
+
+.box-5 button:hover {
+    border: 1px solid red;
+}
+
+.box-5 button:hover .box-1::before {
+    right: 0;
+}
+
+.box-5 button:hover .box-2::before {
+    left: 0;
+}
+
 .img-2 {
     background: url('https://www.ex-coders.com/php-template/fresheat/assets/img/bg/breadcumb.jpg');
     background-size: cover;

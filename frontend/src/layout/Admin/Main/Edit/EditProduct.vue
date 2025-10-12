@@ -11,16 +11,11 @@ const decribe = ref("")
 const price = ref("")
 const data = ref([])
 const router = useRoute()
-const account = localStorage.getItem("account")
 onMounted(async () => {
     const res = await axios.get(`http://localhost:8080/api/detail/${router.params.id}`)
     data.value = res.data
 })
 async function handleSubmit() {
-     if (!account) {
-        toast.warning("Please login to your account.")
-        return;
-    } 
     const fields = [
         { ref: name, key: 'name' },
         { ref: img, key: 'img' },
@@ -60,37 +55,33 @@ const shipDifferent = ref(false)
 </script>
 
 <template>
-    <div class="img-2">
-        <div class="text-center py-40">
-            <div style="color: white; text-transform: uppercase;" class="text-[80px] font-black mb-3">Eddit Products</div>
-            <div style="color: white; " class="font-bold">Home <span class="ml-3">/</span> <span class="ml-3 font-bold"
-                    style="color: red;">Eddit Products</span></div>
-        </div>
-    </div>
-    <div class="bg-[#f8f5f0] p-6 max-w-6xl mx-auto my-20">
-        <h2 class="text-2xl font-semibold mb-4">Eddit Products</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Billing -->
-            <div v-for="item in data">
-                <input type="text" class="w-1/2 p-2 border rounded mb-4 w-full" v-model="item.img"
-                    @input="handleImg($event.target.value)" placeholder="Link img" />
-                <input class="w-full p-2 border rounded mb-4" v-model="item.name"
-                    @input="handleName($event.target.value)" placeholder="Name: " />
-                <input class="w-full p-2 border rounded mb-4" v-model="item.describe"
-                    @input="handleDescribe($event.target.value)" placeholder="Describe: " />
-                <input class="w-full p-2 border rounded mb-4" v-model="item.price"
-                    @input="handlePrice($event.target.value)" placeholder="Price: " />
-                <div class="flex items-center justify-between w-50 px-6 py-3 button" @click="handleSubmit"
-                    style="background-color: #E10E21;">
-                    <div style="color: white;" class="relative z-5">Add to Product
+    <div v-if="router.params.id">
+        <div class="bg-[#f8f5f0] p-6 max-w-6xl mx-auto my-20">
+            <h2 class="text-2xl font-semibold mb-4">Eddit Products</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Billing -->
+                <div v-for="item in data">
+                    <input type="text" class="w-1/2 p-2 border rounded mb-4 w-full" v-model="item.img"
+                        @input="handleImg($event.target.value)" placeholder="Link img" />
+                    <input class="w-full p-2 border rounded mb-4" style="margin: 15px 0;" v-model="item.name"
+                        @input="handleName($event.target.value)" placeholder="Name: " />
+                    <input class="w-full p-2 border rounded mb-4" v-model="item.describe"
+                        @input="handleDescribe($event.target.value)"  placeholder="Describe: " />
+                    <input class="w-full p-2 border rounded mb-4" style="margin: 15px 0;" v-model="item.price"
+                        @input="handlePrice($event.target.value)" placeholder="Price: " />
+                    <div class="flex items-center justify-between w-50 px-6 py-3 button" @click="handleSubmit"
+                        style="background-color: #E10E21;">
+                        <div style="color: white;" class="relative z-5">Add to Product
+                        </div>
+                        <div class="box-1"></div>
+                        <div class="box-2"></div>
+                        <div style="color: white;"><i class="fa-solid fa-bowl-food"></i></div>
                     </div>
-                    <div class="box-1"></div>
-                    <div class="box-2"></div>
-                    <div style="color: white;"><i class="fa-solid fa-bowl-food"></i></div>
                 </div>
             </div>
         </div>
     </div>
+
 </template>
 <style scoped>
 .img-2 {

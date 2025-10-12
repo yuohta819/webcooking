@@ -1,7 +1,5 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import SimpleBar from 'simplebar';
-import 'simplebar-core/dist/simplebar.css';
 import Header from './Header.vue';
 import Introduce from './Introduce.vue';
 import EffectMouted from '../model/EffectMouted.vue';

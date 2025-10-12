@@ -21,7 +21,7 @@ const title = ['Burger King', 'Pizza king', ' Fresh Food', 'Vegetable', 'Dessert
                 </div>
             </div>
         </div>
-        <div class="flex pt-20 px-32 gap-10 flex-wrap">
+        <div class="flex pt-20 px-32 gap-9 flex-wrap">
             <div class="w-78">
                 <div>
                     <img src="https://www.ex-coders.com/php-template/fresheat/assets/img/logo/logoWhite.svg" alt="">
