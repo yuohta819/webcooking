@@ -1,36 +1,58 @@
-import { createApp } from 'vue'
-import { createRouter, createWebHistory } from "vue-router"
-import Toast from "vue-toastification";
-import "vue-toastification/dist/index.css";
-import './style.css'
-import App from './App.vue'
+import { createApp } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
+import './style.css';
+import App from './App.vue';
+
 import AdminRoutes from './routes/AdminRoutes';
 import ClientRoutes from './routes/ClientRoutes';
-import Antd from 'ant-design-vue'
-import 'ant-design-vue/dist/reset.css' // ✅ đúng với v4+
-import 'simplebar'; // JS
-import 'simplebar/dist/simplebar.css'; // ✅ cần thiết
 
+import Antd from 'ant-design-vue';
+import 'ant-design-vue/dist/reset.css';
 
-const routes =
-    [...ClientRoutes,
-    ...AdminRoutes
-    ]
+import 'simplebar';
+import 'simplebar/dist/simplebar.css';
 
+import VueParticles from 'vue3-particles';
+import { emitter } from './components/eventBus';
 
+// 🧩 Gộp tất cả route
+const routes = [...ClientRoutes, ...AdminRoutes];
+
+// 🧩 Cấu hình Router
 const router = createRouter({
-    history: createWebHistory(),
-    routes
-})
+  history: createWebHistory(),
+  routes,
+});
+
+// 🧩 Middleware kiểm tra quyền truy cập
 router.beforeEach((to, from, next) => {
-    const isLoggedIn = !!localStorage.getItem('admin') // kiểm tra có token không
-    const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const admin = JSON.parse(localStorage.getItem('admin') || sessionStorage.getItem('admin') || 'null');
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
-    if (requiresAuth && !isLoggedIn) {
-        next('/admin/login') // nếu chưa login thì về login
-    } else {
-        next() // cho phép đi tiếp
-    }
-})
+  // ✅ Nếu route yêu cầu quyền đăng nhập admin
+  if (requiresAuth && !admin) {
+    next('/admin/login');
+  } else if (to.path === '/admin/login' && admin) {
+    // ✅ Nếu đã login mà cố vào lại trang login thì đẩy về dashboard
+    next('/admin/dashboard');
+  } else {
+    next();
+  }
+});
 
-createApp(App).use(router).use(Toast).use(Antd).mount('#app')
+// 🧩 Khởi tạo app
+const app = createApp(App);
+
+app.use(router);
+app.use(Toast, {
+  position: 'top-right',
+  timeout: 2500,
+});
+app.use(Antd);
+app.use(VueParticles);
+
+app.config.globalProperties.$emitter = emitter;
+
+app.mount('#app');

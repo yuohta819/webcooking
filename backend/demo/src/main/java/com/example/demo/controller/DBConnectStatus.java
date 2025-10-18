@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.DTO.DTOStatus;
 import com.example.demo.Repository.DataRepositoryAccount;
+import com.example.demo.Repository.DataRepositoryInfor;
 import com.example.demo.Repository.DataRepositoryMenu;
 import com.example.demo.Repository.DataRepositoryStatus;
 import com.example.demo.model.DBAccount;
 import com.example.demo.model.DBMenu;
 import com.example.demo.model.DBStatus;
+import com.example.demo.service.OrderService;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,37 +38,55 @@ public class DBConnectStatus {
     private DataRepositoryAccount account;
     @Autowired
     private DataRepositoryMenu menu;
+    @Autowired
+    private DataRepositoryInfor infor;
 
     @PostMapping("/save")
-    @CrossOrigin(origins = "http://localhost:5173") // Hoặc "*"
     public String postMethodName(@RequestBody Map<String, Object> map) {
+        String name = (String) map.get("name");
         String account = (String) map.get("account");
-        List<Integer> list = (List<Integer>) map.get("status");
-        List<Double> listmoney = (List<Double>) map.get("money");
+        List<String> list = (List<String>) map.get("status");
+        List<Integer> listmoney = (List<Integer>) map.get("money");
+        String accountid = (String) map.get("accountid");
+        Integer people = (Integer) map.get("people");
         SecureRandom random = new SecureRandom();
         String ma = "#";
         for (int i = 0; i < 6; i++) {
             int number = random.nextInt(10);
             ma += number;
         }
-        Long id = accountget.getId(account);
         for (int i = 0; i < list.size(); i++) {
             DBStatus status = new DBStatus();
-            status.setAccountid(id);
-            status.setMoney(listmoney.get(i) + "");
-            status.setMenuid(list.get(i));
+            DBAccount acc = new DBAccount();
+            acc.setAccountid(Long.parseLong(accountid));
+            status.setAccount(acc);
+
+            DBMenu menu = new DBMenu();
+
+            Object value = list.get(i);
+            if (value instanceof Integer) {
+                menu.setId(((Integer) value).longValue());
+                infor.deletedid(((Integer) value).longValue());
+            } else if (value instanceof String) {
+                menu.setId(Long.parseLong((String) value));
+            }
+            status.setMenu(menu);
+            status.setMoney(listmoney.get(i));
             status.setStatus1(false);
             status.setStatus2(false);
             status.setStatus3(false);
             status.setBillid(ma);
+            status.setThoi_gian_don_hang(new Date());
+            status.setSo_ban(connect.getNameTable(Integer.parseInt(accountid)).replaceAll("\\D+", "") + "");
             connect.save(status);
         }
+    
         return "";
     }
 
     @GetMapping("/find")
-    public List<DBStatus> getMethodName() {
-        List<DBStatus> list = connect.findAll();
+    public List<DTOStatus> getMethodName() {
+        List<DTOStatus> list = connect.getAllStatus();
         return list;
     }
 
@@ -78,9 +100,16 @@ public class DBConnectStatus {
         }
         if (type.equals("status3")) {
             connect.updateStatus3(id, check);
+            connect.updateBill();
+            connect.updateTongTien();
+        }
+        if (type.equals("delete")) {
+            connect.updateDelete(id, check);
+
         }
         return "";
     }
+
     @PostMapping("/follow")
     public List<DBStatus> getMethodName(@RequestBody DBAccount username) {
         Map<Integer, List<DBStatus>> map = new HashMap<>();
@@ -90,9 +119,13 @@ public class DBConnectStatus {
             id = x.getAccountid();
         }
         List<DBStatus> list1 = connect.findByAccountid(id);
-        List<DBMenu> listmenu = menu.findAll();
         return list1;
     }
-    
+
+    @GetMapping("/client/callstatus")
+    public List<DBStatus> getMethodName(@RequestParam String accountid) {
+        List<DBStatus> db = connect.getCallStatus(Integer.parseInt(accountid));
+        return db;
+    }
 
 }

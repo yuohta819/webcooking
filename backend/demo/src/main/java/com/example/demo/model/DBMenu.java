@@ -1,5 +1,9 @@
 package com.example.demo.model;
 
+import java.time.LocalDate;
+import java.util.Date;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Menu")
+@Table(name = "[Menu]")
 
 public class DBMenu {
     @Id
@@ -16,17 +20,24 @@ public class DBMenu {
     private String img;
     private String name;
     private String describe;
-    private String price;
+    private float price;
+    @Column(name = "isDeleted")
+    private Boolean isDeleted;
+    @Column(name = "isTime")
+    private Date isTime;
 
     public DBMenu() {
     }
 
-    public DBMenu(Long id, String img, String name, String describe, String price) {
+    public DBMenu(Long id, String img, String name, String describe, float price, boolean isDeleted,
+            Date isTime) {
         this.id = id;
         this.img = img;
         this.name = name;
         this.describe = describe;
         this.price = price;
+        this.isDeleted = isDeleted;
+        this.isTime = isTime;
     }
 
     public Long getId() {
@@ -61,12 +72,29 @@ public class DBMenu {
         this.describe = describe;
     }
 
-    public String getPrice() {
+    public float getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public Date getIsTime() {
+        return isTime;
+    }
+
+    public void setIsTime(Date isTime) {
+        this.isTime = isTime;
+    }
+
+   
 }

@@ -2,9 +2,10 @@
 import { useRoute } from 'vue-router'
 import { computed,onMounted, ref } from 'vue'
 import SimpleBar from 'simplebar';
-import Header from './layout/main/Header.vue'
-import Footer from './layout/main/Footer.vue'
-import EffectMouted from './layout/model/EffectMouted.vue'
+import Header from "../src/layout/Client/main/Header.vue"
+import Footer from './layout/client/main/Footer.vue'
+import EffectMouted from './layout/client/model/EffectMouted.vue'
+import BoxChat from './components/BoxChat.vue';
 import 'animate.css';
 const scrollContainer = ref(null);
 const route = useRoute()
@@ -17,6 +18,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <BoxChat />
   <div ref="scrollContainer" data-simplebar style="height: 100vh; ">
     <div class="min-h-screen overflow-y-auto">
       <!-- Custom scroll được áp dụng cho toàn bộ trang -->

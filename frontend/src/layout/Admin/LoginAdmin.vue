@@ -12,7 +12,7 @@ const router = useRouter();
 async function handleSubmit(e) {
   e.preventDefault(); // Ngăn reload trang mặc định
   try {
-    const response = await axios.get('http://localhost:8080/admin/check', {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/admin/check`, {
       params: {
         name: name.value,
         password: password.value

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Hóa đơn thanh toán</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background-color: #f1f5f9;
+      margin: 0;
+      padding: 20px;
+      color: #1f2937;
+    }
+
+    .invoice {
+      max-width: 520px;
+      background: #fff;
+      margin: auto;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    /* --- HEADER --- */
+    .header {
+      background-color: #00b14f;
+      color: #fff;
+      padding: 22px 28px;
+      text-align: left;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      font-size: 15px;
+      letter-spacing: 0.3px;
+    }
+
+    /* --- SUMMARY --- */
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9fafb;
+      padding: 16px 26px;
+      border-bottom: 2px solid #00b14f;
+    }
+
+    .summary h2 {
+      color: #00b14f;
+      font-size: 24px;
+      margin: 4px 0 0;
+    }
+
+    .summary p {
+      margin: 3px 0;
+      color: #374151;
+      font-size: 13px;
+    }
+
+    /* --- CONTENT --- */
+    .content {
+      padding: 25px;
+    }
+
+    .section h3 {
+      color: #00b14f;
+      font-size: 15px;
+      margin-bottom: 6px;
+      border-bottom: 2px solid #00b14f;
+      display: inline-block;
+      padding-bottom: 3px;
+    }
+
+    .section p {
+      margin: 4px 0;
+      color: #374151;
+      font-size: 13px;
+    }
+
+    /* --- TABLE --- */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      overflow: hidden;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f3f4f6;
+      color: #111827;
+      font-weight: 600;
+    }
+
+    tbody tr:hover {
+      background-color: #f9fafb;
+    }
+
+    /* --- TOTAL SECTION --- */
+    .total-section {
+      margin-top: 16px;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+
+    .total-section p {
+      margin: 3px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .total {
+      font-weight: 700;
+      font-size: 17px;
+      color: #00b14f;
+      border-top: 2px dashed #00b14f;
+      margin-top: 8px;
+      padding-top: 6px;
+    }
+
+    /* --- FOOTER --- */
+    .footer {
+      background-color: #f9fafb;
+      padding: 16px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 12.5px;
+      border-top: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="invoice">
+    <div class="header">
+      <h1 th:text="${appName}"></h1>
+      <p>Chúc bạn ngon miệng!</p>
+    </div>
+
+    <div class="summary">
+      <div>
+        <p><b>Tổng cộng:</b></p>
+        <h2 th:text="${totalStr} + 'đ'"></h2>
+      </div>
+      <div style="text-align: right; margin-left: 20px;">
+        <p><b>Ngày:</b> <span th:text="${date}"></span></p>
+        <p><b>Mã đơn hàng:</b> <span th:text="${orderId}"></span></p>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="section">
+        <h3>CHI TIẾT ĐƠN HÀNG</h3>
+        <p><b>Người dùng:</b> <span th:text="${name}"></span></p>
+        <p><b>Email:</b> <span th:text="${email}"></span></p>
+      </div>
+
+      <div class="section" style="margin-top: 10px;">
+        <h3>HÓA ĐƠN CỦA BẠN</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Sản phẩm</th>
+              <th>Số lượng</th>
+              <th>Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="item : ${items}">
+              <td th:text="${item.name}"></td>
+              <td th:text="${item.quantity}"></td>
+              <td th:text="${item.total} + 'đ'"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="total-section">
+          <p>Tạm tính: <span th:text="${subtotalStr} + 'đ'"></span></p>
+          <p>Thuế (30%): <span th:text="${taxStr} + 'đ'"></span></p>
+          <p class="total">Tổng cộng: <span th:text="${totalStr} + 'đ'"></span></p>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Cảm ơn bạn đã đặt hàng tại <b th:text="${appName}"></b> 💚</p>
+    </div>
+  </div>
+</body>
+
+</html>

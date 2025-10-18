@@ -1,136 +1,93 @@
 <script setup>
 import { ref } from 'vue'
-
 import axios from 'axios'
 import { useToast } from "vue-toastification";
+
 const toast = useToast();
 const name = ref("")
-const img = ref("")
-const decribe = ref("")
+const img = ref("")        // URL trả về từ Cloudinary
+const describe = ref("")
 const price = ref("")
-async function handleSubmit() {
-  const res = await axios.post(`http://localhost:8080/api/create`, {
-    img: img.value,
-    name: name.value,
-    describe: decribe.value,
-    price: price.value
-  })
-  if (res.data == "") {
-    toast.success("Create successful products!")
+const isUploading = ref(false)
+
+// ✅ Upload ảnh khi người dùng chọn file
+async function handleImageUpload(event) {
+  const file = event.target.files[0]
+  if (!file) return
+
+  const formData = new FormData()
+  formData.append("file", file)
+
+  isUploading.value = true
+  try {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/api/upload-image`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+    img.value = res.data.url // URL trả về từ backend
+    toast.success("Tải ảnh lên thành công!")
+  } catch (err) {
+    toast.error("Lỗi khi tải ảnh lên!")
+  } finally {
+    isUploading.value = false
   }
 }
-function handleImg(infor) {
-  img.value = infor
+
+// ✅ Submit sản phẩm
+async function handleSubmit() {
+  try {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/api/create`, {
+      img: img.value,
+      name: name.value,
+      describe: describe.value,
+      price: price.value
+    })
+    if (res.data == '') {
+      toast.success("Tạo sản phẩm thành công!")
+    }
+  } catch (err) {
+    toast.error("Tạo sản phẩm thất bại!")
+  }
 }
-function handleName(infor) {
-  name.value = infor
-}
-function handleDescribe(infor) {
-  decribe.value = infor
-}
-function handlePrice(infor) {
-  price.value = infor
-}
-const shipDifferent = ref(false)
 </script>
 
 <template>
-  <div class="bg-[#f8f5f0] p-6 max-w-6xl mx-auto">
-    <h2 class="text-2xl font-semibold mb-4">Add Products</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <!-- Billing -->
-      <div>
-        <input type="text" class="w-1/2 p-2 border rounded mb-4 w-full" @input="handleImg($event.target.value)"
-          placeholder="Link img" />
-        <input class="w-full p-2 border rounded mb-4 " style="margin: 15px 0;" @input="handleName($event.target.value)" placeholder="Name: " />
-        <input class="w-full p-2 border rounded mb-4"  @input="handleDescribe($event.target.value)"
-          placeholder="Describe: " />
-        <input class="w-full p-2 border rounded mb-4" style="margin: 15px 0;" @input="handlePrice($event.target.value)" placeholder="Price: " />
-        <div class="flex items-center justify-between w-50 px-6 py-3 button" @click="handleSubmit"
-          style="background-color: #E10E21;">
-          <div style="color: white;" class="relative z-5">Add to Product
+  <div class="bg-gradient-to-br flex justify-center pt-20 pb-20" style="background-color: #F4F1EA;">
+    <div class="bg-white shadow-xl rounded-2xl p-10 w-full max-w-lg border border-gray-200">
+      <h2 class="text-3xl font-semibold text-gray-700 text-center mb-8 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-box-open text-gray-700"></i> Add Product
+      </h2>
+
+      <div class="flex flex-col gap-6">
+
+        <!-- Upload ảnh -->
+        <div>
+          <input type="file" accept="image/*" @change="handleImageUpload"
+            class="block w-full text-gray-700 border border-gray-300 rounded-lg p-2 cursor-pointer" />
+          <div v-if="isUploading" class="text-blue-500 text-sm mt-2 animate-pulse">Đang tải ảnh lên...</div>
+
+          <div v-if="img" class="mt-4 flex justify-center">
+            <img :src="img" alt="Preview" class="rounded-xl shadow-md max-h-48 object-cover" />
           </div>
-          <div class="box-1"></div>
-          <div class="box-2"></div>
-          <div style="color: white;"><i class="fa-solid fa-bowl-food"></i></div>
         </div>
+
+        <input
+          class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+          placeholder="Product Name" v-model="name" />
+
+        <textarea rows="3"
+          class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition resize-none"
+          placeholder="Product Description" v-model="describe"></textarea>
+
+        <input
+          class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+          placeholder="Price" v-model="price" />
+
+        <button @click="handleSubmit"
+          class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition duration-300 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-check-circle text-white text-lg"></i>
+          Save Product
+        </button>
       </div>
     </div>
   </div>
 </template>
-<style scoped>
-.img-2 {
-    background: url('https://www.ex-coders.com/php-template/fresheat/assets/img/bg/breadcumb.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-.button button,
-.button i {
-  position: relative;
-  z-index: 10;
-  cursor: pointer;
-}
-
-.button {
-  background: #EB0029;
-  color: white;
-  height: 50px;
-  position: relative;
-  overflow: hidden;
-  z-index: 5;
-  cursor: pointer;
-}
-
-.box-1 {
-  position: absolute;
-  width: 100%;
-  height: 50%;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-}
-
-.box-1::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: -100%;
-  width: 100%;
-  height: 100%;
-  background: black;
-  transition: right 0.5s ease;
-}
-
-.box-2 {
-  position: absolute;
-  width: 100%;
-  height: 50%;
-  bottom: 0;
-  left: 0;
-  overflow: hidden;
-}
-
-.box-2::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: black;
-  transition: left 0.5s ease;
-}
-
-.button:hover {
-  border: 1px solid red;
-}
-
-.button:hover .box-1::before {
-  right: 0;
-}
-
-.button:hover .box-2::before {
-  left: 0;
-}
-</style>

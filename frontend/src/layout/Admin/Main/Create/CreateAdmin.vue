@@ -10,7 +10,7 @@ const name = ref('')
 const toast = useToast();
 const router = useRouter()
 async function handleSubmit() {
-    const response = await axios.get('http://localhost:8080/admin/save', {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/admin/save`, {
         params: {
             password: password.value,
             name: name.value

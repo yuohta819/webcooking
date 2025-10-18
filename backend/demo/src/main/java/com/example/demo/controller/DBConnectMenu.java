@@ -1,22 +1,30 @@
 package com.example.demo.controller;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.demo.Repository.DataRepositoryAccount;
 import com.example.demo.Repository.DataRepositoryInfor;
 import com.example.demo.Repository.DataRepositoryMenu;
 import com.example.demo.model.DBAccount;
-import com.example.demo.model.DBInfor;
+import com.example.demo.model.DBBill;
 import com.example.demo.model.DBMap;
 import com.example.demo.model.DBMenu;
+import com.example.demo.model.DBStatus;
 
 import jakarta.websocket.server.PathParam;
 
@@ -37,11 +45,24 @@ public class DBConnectMenu {
     private DataRepositoryAccount account;
     @Autowired
     private DataRepositoryInfor infor;
+    @Autowired
+    private Cloudinary cloudinary;
+
+    @PostMapping("/upload-image")
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap("folder", "products"));
+            String imageUrl = (String) uploadResult.get("secure_url");
+            return ResponseEntity.ok(Map.of("url", imageUrl));
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Upload failed"));
+        }
+    }
 
     @GetMapping("/menu")
-    @CrossOrigin(origins = "http://localhost:5173")
     public List<DBMenu> getListMenu() {
-        List<DBMenu> listmenu = menu.findAll();
+        List<DBMenu> listmenu = menu.findAllIs();
         return listmenu;
     }
 
@@ -55,7 +76,7 @@ public class DBConnectMenu {
     public String getCart(@RequestParam Long id, @RequestParam String name, @RequestParam int count,
             @RequestParam String account) {
         for (int i = 0; i < count; i++) {
-            DBInfor bill = new DBInfor();
+            DBBill bill = new DBBill();
             DBMenu menu1 = menu.findById(id).orElseThrow();
             bill.setMenu(menu1);
             bill.setName(name);
@@ -67,9 +88,9 @@ public class DBConnectMenu {
 
     @GetMapping("/infor/{account}")
     public List<DBMap> getInfor(@PathVariable String account) {
-        List<DBInfor> list = infor.findUsersId(account);
+        List<DBBill> list = infor.findUsersId(account);
         Map<DBMenu, Integer> map = new LinkedHashMap<>();
-        for (DBInfor x : list) {
+        for (DBBill x : list) {
             if (map.containsKey(x.getMenu())) {
                 int cnt = map.get(x.getMenu());
                 cnt = cnt + 1;
@@ -90,6 +111,8 @@ public class DBConnectMenu {
         m.setImg(menu.getImg());
         m.setName(menu.getName());
         m.setPrice(menu.getPrice());
+        m.setIsDeleted(false);
+        m.setIsTime(new Date());
         this.menu.save(m);
         return "";
     }
@@ -113,5 +136,22 @@ public class DBConnectMenu {
         infor.deletedid(id);
         return true;
     }
+
+    @GetMapping("/deleted")
+    public List<DBMenu> getMethodName() {
+        List<DBMenu> listmenudeleted = menu.findAllIsDeleted();
+        return listmenudeleted;
+    }
+
+    @PostMapping("/restore/{id}")
+    public String postMethodName(@PathVariable int id) {
+        menu.updateDelete(id);
+        return "";
+    }
+    @GetMapping("/suggest")
+    public List<DBMenu> getMethodNamee(@RequestParam String id) {
+        return menu.findSuggest(Integer.parseInt(id));
+    }
+    
 
 }

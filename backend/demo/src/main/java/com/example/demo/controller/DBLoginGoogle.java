@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/login")
 public class DBLoginGoogle {
     @GetMapping("/user")
-    @CrossOrigin(origins = "http://localhost:5173")
     public Map<String, Object> getMethodName(@AuthenticationPrincipal OAuth2User principal) {
 
         try {

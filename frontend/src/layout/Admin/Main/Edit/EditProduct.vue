@@ -1,20 +1,23 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-
 import axios from 'axios'
-import { useToast } from "vue-toastification";
-import { useRoute } from 'vue-router';
-const toast = useToast();
+import { useToast } from "vue-toastification"
+import { useRoute } from 'vue-router'
+
+const toast = useToast()
+const router = useRoute()
+
 const name = ref("")
 const img = ref("")
 const decribe = ref("")
 const price = ref("")
 const data = ref([])
-const router = useRoute()
+
 onMounted(async () => {
-    const res = await axios.get(`http://localhost:8080/api/detail/${router.params.id}`)
+    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/api/detail/${router.params.id}`)
     data.value = res.data
 })
+
 async function handleSubmit() {
     const fields = [
         { ref: name, key: 'name' },
@@ -24,139 +27,79 @@ async function handleSubmit() {
     ]
 
     fields.forEach(({ ref, key }) => {
-        if (ref.value === "") {
-            ref.value = data.value[0][key]
-        }
+        if (ref.value === "") ref.value = data.value[0][key]
     })
-    const res = await axios.post(`http://localhost:8080/api/edit`, {
+
+    const res = await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/api/edit`, {
         id: router.params.id,
         img: img.value,
         name: name.value,
         describe: decribe.value,
         price: price.value
     })
-    if (res.data == "yes") {
-        toast.success("Edited successful products!")
+
+    if (res.data === "yes") {
+        toast.success("Product updated successfully!")
     }
 }
-function handleImg(infor) {
-    img.value = infor
-}
-function handleName(infor) {
-    name.value = infor
-}
-function handleDescribe(infor) {
-    decribe.value = infor
-}
-function handlePrice(infor) {
-    price.value = infor
-}
-const shipDifferent = ref(false)
+
+function handleImg(v) { img.value = v }
+function handleName(v) { name.value = v }
+function handleDescribe(v) { decribe.value = v }
+function handlePrice(v) { price.value = v }
 </script>
 
 <template>
-    <div v-if="router.params.id">
-        <div class="bg-[#f8f5f0] p-6 max-w-6xl mx-auto my-20">
-            <h2 class="text-2xl font-semibold mb-4">Eddit Products</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Billing -->
-                <div v-for="item in data">
-                    <input type="text" class="w-1/2 p-2 border rounded mb-4 w-full" v-model="item.img"
-                        @input="handleImg($event.target.value)" placeholder="Link img" />
-                    <input class="w-full p-2 border rounded mb-4" style="margin: 15px 0;" v-model="item.name"
-                        @input="handleName($event.target.value)" placeholder="Name: " />
-                    <input class="w-full p-2 border rounded mb-4" v-model="item.describe"
-                        @input="handleDescribe($event.target.value)"  placeholder="Describe: " />
-                    <input class="w-full p-2 border rounded mb-4" style="margin: 15px 0;" v-model="item.price"
-                        @input="handlePrice($event.target.value)" placeholder="Price: " />
-                    <div class="flex items-center justify-between w-50 px-6 py-3 button" @click="handleSubmit"
-                        style="background-color: #E10E21;">
-                        <div style="color: white;" class="relative z-5">Add to Product
-                        </div>
-                        <div class="box-1"></div>
-                        <div class="box-2"></div>
-                        <div style="color: white;"><i class="fa-solid fa-bowl-food"></i></div>
-                    </div>
+    <div v-if="router.params.id" class="py-16 bg-gray-50 min-h-screen" style="background-color: #F4F1EA;">
+        <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+            <h2 class="text-3xl font-semibold text-gray-700 mb-8 text-center">
+                ✏️ Edit Product
+            </h2>
+
+            <div v-for="item in data" :key="item.id" class="space-y-5">
+                <div>
+                    <label class="block text-gray-600 mb-1 font-medium">Image URL</label>
+                    <input type="text"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        v-model="item.img" @input="handleImg($event.target.value)" placeholder="Enter image link..." />
                 </div>
+
+                <div>
+                    <label class="block text-gray-600 mb-1 font-medium">Product Name</label>
+                    <input
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        v-model="item.name" @input="handleName($event.target.value)"
+                        placeholder="Enter product name..." />
+                </div>
+
+                <div>
+                    <label class="block text-gray-600 mb-1 font-medium">Description</label>
+                    <textarea rows="3"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+                        v-model="item.describe" @input="handleDescribe($event.target.value)"
+                        placeholder="Enter product description..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-gray-600 mb-1 font-medium">Price</label>
+                    <input type="number"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        v-model="item.price" @input="handlePrice($event.target.value)" placeholder="Enter price..." />
+                </div>
+                <button @click="handleSubmit"
+                    class="w-full cursor-pointer py-3 mt-4 bg-red-400 hover:bg-sky-300 text-sky-800 font-semibold rounded-xl shadow-sm transition-all duration-200 flex items-center justify-center gap-2 border border-sky-300">
+                    <i class="fa-solid fa-check-circle text-sky-700"></i>
+                    Save Changes
+                </button>
+
             </div>
         </div>
     </div>
-
 </template>
+
 <style scoped>
-.img-2 {
-    background: url('https://www.ex-coders.com/php-template/fresheat/assets/img/bg/breadcumb.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.button button,
-.button i {
-    position: relative;
-    z-index: 10;
-    cursor: pointer;
-}
-
-.button {
-    background: #EB0029;
-    color: white;
-    height: 50px;
-    position: relative;
-    overflow: hidden;
-    z-index: 5;
-    cursor: pointer;
-}
-
-.box-1 {
-    position: absolute;
-    width: 100%;
-    height: 50%;
-    top: 0;
-    left: 0;
-    overflow: hidden;
-}
-
-.box-1::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: -100%;
-    width: 100%;
-    height: 100%;
-    background: black;
-    transition: right 0.5s ease;
-}
-
-.box-2 {
-    position: absolute;
-    width: 100%;
-    height: 50%;
-    bottom: 0;
-    left: 0;
-    overflow: hidden;
-}
-
-.box-2::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: black;
-    transition: left 0.5s ease;
-}
-
-.button:hover {
-    border: 1px solid red;
-}
-
-.button:hover .box-1::before {
-    right: 0;
-}
-
-.button:hover .box-2::before {
-    left: 0;
+/* Nhẹ nhàng hơn với background gradient */
+body {
+    background: linear-gradient(to bottom right, #e0f2fe, #f8fafc);
 }
 </style>
