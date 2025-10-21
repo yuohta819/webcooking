@@ -7,29 +7,50 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
-import java.io.FileInputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Service
 public class DialogflowService {
 
-    @Value("${dialogflow.key.path}")
-    private String keyPath;
+    @Value("${dialogflow.credentials.json:}")
+    private String credentialsJson; // Biến môi trường (Railway)
+
+    @Value("${dialogflow.key.path:}")
+    private String keyPath; // Đường dẫn file local
 
     @Value("${dialogflow.project.id}")
     private String projectId;
 
     @PostConstruct
     public void init() {
-        // Ghi log để kiểm tra
-        System.out.println("✅ Dialogflow key path loaded from properties: " + keyPath);
         System.out.println("✅ Project ID: " + projectId);
+        if (credentialsJson != null && !credentialsJson.isEmpty()) {
+            System.out.println("✅ Đang dùng credentials từ biến môi trường (Railway).");
+        } else {
+            System.out.println("✅ Đang dùng credentials từ file local: " + keyPath);
+        }
     }
 
     public String detectIntent(String text) {
         try {
-            // Đọc file credentials
-            GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(keyPath));
+            GoogleCredentials credentials;
+
+            // 🔹 Nếu chạy Railway → đọc từ biến môi trường
+            if (credentialsJson != null && !credentialsJson.isEmpty()) {
+                credentials = GoogleCredentials.fromStream(
+                        new ByteArrayInputStream(credentialsJson.getBytes(StandardCharsets.UTF_8))
+                );
+            } 
+            // 🔹 Nếu chạy local → đọc file thật
+            else if (keyPath != null && !keyPath.isEmpty()) {
+                credentials = GoogleCredentials.fromStream(new FileInputStream(keyPath));
+            } 
+            else {
+                throw new IllegalStateException("Không tìm thấy credentials (biến môi trường hoặc file).");
+            }
+
             SessionsSettings sessionsSettings = SessionsSettings.newBuilder()
                     .setCredentialsProvider(FixedCredentialsProvider.create(credentials))
                     .build();
