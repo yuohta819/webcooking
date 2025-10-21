@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <div v-if="!route.params.id && !route.path.endsWith('/edit/history')">
