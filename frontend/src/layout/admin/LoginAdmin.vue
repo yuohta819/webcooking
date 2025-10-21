@@ -1,4 +1,3 @@
-@ -1,97 +0,0 @@
 <script setup>
 import axios from 'axios';
 import { ref } from 'vue';
