@@ -18,8 +18,10 @@ if (accountid == null) {
     accountid = sessionStorage.getItem("accountid")
 }
 onMounted(async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/api/infor/${name}`)
-    data.value = res.data
+    if (name) {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/api/infor/${name}`)
+        data.value = res.data
+    }
 
 })
 const grandTotal = computed(() => {
@@ -119,7 +121,7 @@ async function removeItem(id) {
 
                 <!-- Order total -->
                 <div class="text-red-600 font-bold text-lg">${{ (grandTotal + grandTotal * 0.3).toLocaleString("vi-VN")
-                    }}</div>
+                }}</div>
             </div>
         </div>
 
@@ -127,7 +129,7 @@ async function removeItem(id) {
         <a href="/checkout">
             <div class="box-5">
                 <div class="text-center relative pb-5 mt-5">
-                    <button class="px-5 py-3 w-full" >
+                    <button class="px-5 py-3 w-full">
                         <span class="relative z-10 text-[14px] font-bold">Order</span>
                         <div class="box-1"></div>
                         <div class="box-2"></div>

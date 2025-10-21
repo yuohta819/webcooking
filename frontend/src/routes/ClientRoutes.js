@@ -1,4 +1,3 @@
-
 import "vue-toastification/dist/index.css";
 import Main from '../layout/client/main/Main.vue'
 import AboutUs from '../layout/client/AboutUs/AboutUs.vue'

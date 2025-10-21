@@ -19,6 +19,7 @@ let account = localStorage.getItem("account")
 if (!account) {
     account = sessionStorage.getItem("account")
 }
+console.log(account)
 </script>
 
 <template>
