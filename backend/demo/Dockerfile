@@ -1,15 +1,12 @@
-# Stage 1: Build app
-FROM maven:3.9.4-eclipse-temurin-17 AS builder
+# Giai đoạn build
+FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
-COPY pom.xml .
-COPY settings.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests --settings settings.xml
+COPY . .
+RUN ./mvnw clean package -DskipTests || mvn clean package -DskipTests
 
-
-# Stage 2: Run app
+# Giai đoạn chạy
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
