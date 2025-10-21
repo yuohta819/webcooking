@@ -38,7 +38,7 @@ export default [
                     },
                     {
                         path: 'history',
-                        component: () => import("../layout/admin/main/edit/HisoricDelete.vue")
+                        component: () => import("../layout/admin/main/edit/HistoricDelete.vue")
                     }
                 ]
             },
