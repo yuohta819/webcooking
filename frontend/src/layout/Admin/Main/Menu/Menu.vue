@@ -68,11 +68,11 @@ import axios from 'axios'
 import QRCode from 'qrcode'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
-
+import { useToast } from 'vue-toastification'
 const items = ref([])
 const menuRef = ref(null)
 const selectedTheme = ref(localStorage.getItem('theme') || 'brown')
-
+const toast = useToast()
 // Định dạng giá tiền
 function formatPrice(v) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v)
@@ -125,6 +125,11 @@ onMounted(() => {
 
 // Xuất ra PDF
 async function exportPDF() {
+  const roles = sessionStorage.getItem("canAdd")
+  if (roles === 'false') {
+    toast.warning("Bạn không có quyền truy cập chức năng này !!!")
+    return
+  }
   if (!menuRef.value) return
   try {
     const canvas = await html2canvas(menuRef.value, { backgroundColor: '#ffffff', scale: 2, useCORS: true })

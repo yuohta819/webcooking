@@ -29,19 +29,19 @@ public class DBConnectDecentralization {
     }
 
     @PostMapping("/per")
-    public String postMethodName(@RequestBody Map<String, Object> data) {
+    public String postMethodName(@RequestBody Map<String, String> data) {
         String type = (String) data.get("type");
-        boolean statusType = (boolean) data.get("statusType");
-        String name = (String) data.get("name");
+        boolean statusType = Boolean.parseBoolean(data.get("statusType"));
+        int id = Integer.parseInt( data.get("accountid"));
         switch (type) {
             case "canAdd":
-                rep.updateCanAdd(statusType, name);
+                rep.updateCanAdd(statusType, id);
                 break;
             case "canEdit":
-                rep.updateCanEdit(statusType, name);
+                rep.updateCanEdit(statusType, id);
                 break;
             case "canDelete":
-                rep.updateCanDelete(statusType, name);
+                rep.updateCanDelete(statusType, id);
                 break;
             default:
                 break;

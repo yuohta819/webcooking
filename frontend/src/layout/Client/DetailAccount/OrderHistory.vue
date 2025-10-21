@@ -83,7 +83,7 @@ if (!account) account = sessionStorage.getItem('accountid')
 
 onMounted(async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/bill/history`, {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/cart/history`, {
       params: { param: account }
     })
     data.value = res.data

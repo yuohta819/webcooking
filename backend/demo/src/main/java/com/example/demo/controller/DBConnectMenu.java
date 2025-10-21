@@ -21,7 +21,7 @@ import com.example.demo.Repository.DataRepositoryAccount;
 import com.example.demo.Repository.DataRepositoryInfor;
 import com.example.demo.Repository.DataRepositoryMenu;
 import com.example.demo.model.DBAccount;
-import com.example.demo.model.DBBill;
+import com.example.demo.model.DBCart;
 import com.example.demo.model.DBMap;
 import com.example.demo.model.DBMenu;
 import com.example.demo.model.DBStatus;
@@ -76,7 +76,7 @@ public class DBConnectMenu {
     public String getCart(@RequestParam Long id, @RequestParam String name, @RequestParam int count,
             @RequestParam String account) {
         for (int i = 0; i < count; i++) {
-            DBBill bill = new DBBill();
+            DBCart bill = new DBCart();
             DBMenu menu1 = menu.findById(id).orElseThrow();
             bill.setMenu(menu1);
             bill.setName(name);
@@ -88,9 +88,9 @@ public class DBConnectMenu {
 
     @GetMapping("/infor/{account}")
     public List<DBMap> getInfor(@PathVariable String account) {
-        List<DBBill> list = infor.findUsersId(account);
+        List<DBCart> list = infor.findUsersId(account);
         Map<DBMenu, Integer> map = new LinkedHashMap<>();
-        for (DBBill x : list) {
+        for (DBCart x : list) {
             if (map.containsKey(x.getMenu())) {
                 int cnt = map.get(x.getMenu());
                 cnt = cnt + 1;

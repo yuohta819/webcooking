@@ -67,7 +67,7 @@ if (account == null) {
 }
 
 onMounted(async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/bill/total`, {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/cart/total`, {
         params: { param: account }
     })
     data.value = res.data

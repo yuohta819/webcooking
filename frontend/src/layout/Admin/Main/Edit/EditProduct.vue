@@ -2,17 +2,22 @@
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { useToast } from "vue-toastification"
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const toast = useToast()
 const router = useRoute()
-
+const route = useRouter()
 const name = ref("")
 const img = ref("")
 const decribe = ref("")
 const price = ref("")
 const data = ref([])
-
+const roles1 = sessionStorage.getItem("canAdd")
+const roles2 = sessionStorage.getItem("canEdit")
+if (roles2 === 'false') {
+    toast.warning("Bạn không có quyền truy cập chức năng này !!!")
+    route.push(`/${import.meta.env.VITE_APP_NAME}n/edit`)
+}
 onMounted(async () => {
     const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/api/detail/${router.params.id}`)
     data.value = res.data

@@ -45,7 +45,7 @@ public interface DataRepositoryStatus extends JpaRepository<DBStatus, Long> {
 
     List<DBStatus> findByAccountid(Long accountid);
 
-    @Query("SELECT new com.example.demo.DTO.DTOStatus(d1.statusid,d1.money, d1.status1, d1.status2, d1.status3, d2.name, d1.billid,d1.is_deleted_status,d1.so_ban) "
+    @Query("SELECT new com.example.demo.DTO.DTOStatus(d1.statusid,d1.money, d1.status1, d1.status2, d1.status3, d2.name, d1.billid,d1.is_deleted_status,d1.so_ban,d2.accountid,d1.menuid) "
             +
             "FROM DBStatus d1 JOIN DBAccount d2 ON d1.accountid = d2.accountid")
     List<DTOStatus> getAllStatus();
@@ -57,4 +57,5 @@ public interface DataRepositoryStatus extends JpaRepository<DBStatus, Long> {
     Integer getTotal(@Param("id") int id);
     @Query("SELECT d.table_name FROM DBNumber d WHERE d.accountid = :id")
     String getNameTable(@Param("id") Integer id);
+   
 }

@@ -12,9 +12,8 @@ const data = {
   ],
 }
 </script>
-
 <template>
-  <div class="p-6 bg-white rounded-2xl shadow" style="width:884px;">
+  <div class="p-6 bg-white rounded-2xl shadow" style="width: 884px;">
     <Bar :data="data" />
   </div>
 </template>

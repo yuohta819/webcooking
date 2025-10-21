@@ -14,11 +14,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Bills")
-public class DBBill {
+@Table(name = "Carts")
+public class DBCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long billid;
+    private Long cartid;
     private String name;
     @Column(insertable=false, updatable=false)
     private int idproduct;
@@ -37,23 +37,24 @@ public class DBBill {
         this.menu = menu;
     }
 
-    public DBBill() {
+    public DBCart() {
     }
 
-    public DBBill(Long billid, String name, int idproduct, LocalDateTime time, String account) {
-        this.billid = billid;
+    public DBCart(Long cartid, String name, int idproduct, LocalDateTime time, String account, DBMenu menu) {
+        this.cartid = cartid;
         this.name = name;
         this.idproduct = idproduct;
         this.time = time;
         this.account = account;
+        this.menu = menu;
     }
 
-    public Long getBillid() {
-        return billid;
+    public Long getCartid() {
+        return cartid;
     }
 
-    public void setBillid(Long billid) {
-        this.billid = billid;
+    public void setCartid(Long cartid) {
+        this.cartid = cartid;
     }
 
     public String getName() {
@@ -87,5 +88,7 @@ public class DBBill {
     public void setAccount(String account) {
         this.account = account;
     }
+
+    
 
 }

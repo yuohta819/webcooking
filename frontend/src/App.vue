@@ -1,20 +1,36 @@
 <script setup>
-import { useRoute } from 'vue-router'
-import { computed,onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import SimpleBar from 'simplebar';
-import Header from "../src/layout/Client/main/Header.vue"
+import Header from "./layout/client/main/Header.vue"
 import Footer from './layout/client/main/Footer.vue'
 import EffectMouted from './layout/client/model/EffectMouted.vue'
 import BoxChat from './components/BoxChat.vue';
 import 'animate.css';
 const scrollContainer = ref(null);
 const route = useRoute()
+const router = useRouter()
 
 // Kiểm tra xem có hiển thị layout client không
 const isClientRoute = computed(() => route.meta.layout === 'client')
 onMounted(() => {
   new SimpleBar(scrollContainer.value, { autoHide: false });
 });
+let checkInterval
+
+onMounted(() => {
+  checkInterval = setInterval(() => {
+    const isLoggedIn = sessionStorage.getItem('admin')
+    if (!isLoggedIn && router.currentRoute.value.path.startsWith('/admin')) {
+      // Nếu session bị clear khi đang ở trang admin
+      router.push('/admin/login')
+    }
+  }, 1000) // kiểm tra mỗi giây
+})
+
+onBeforeUnmount(() => {
+  clearInterval(checkInterval)
+})
 </script>
 
 <template>

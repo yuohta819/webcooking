@@ -1,28 +1,28 @@
 
-import Edit from "../layout/Admin/Main/Edit/Edit.vue"
-import Main from "../layout/Admin/Main/Main.vue"
-import CreateProduct from "../layout/Admin/Main/Create/CreateProduct.vue"
-import StatusBill from "../layout/Admin/Main/StatusBill/StatusBill.vue"
-import ManagerBill from "../layout/Admin/Main/StatusBill/ManagerBill.vue"
-import LoginAdmin from "../layout/Admin/LoginAdmin.vue"
-import CreateAdmin from "../layout/Admin/Main/Create/CreateAdmin.vue"
-import Dashboard from "../layout/Admin/Main/Dashboard/Dashboard.vue"
-import Decentralization from "../layout/Admin/Main/Decentralization/decentralization.vue"
-import ExportExcel from "../layout/Admin/Main/Excel/ExportExcel.vue"
-import TableManagement from "../layout/Admin/Main/Tablenumber/TableManagement.vue"
-import AddTable from "../layout/Admin/Main/Tablenumber/AddTable.vue"
-import Menu from "../layout/Admin/Main/Menu/Menu.vue"
-import FeelBack from "../layout/Admin/Main/FeelBack/FeelBack.vue"
+import Edit from "../layout/admin/main/edit/Edit.vue"
+import Main from "../layout/admin/main/Main.vue"
+import CreateProduct from "../layout/admin/main/create/CreateProduct.vue"
+import StatusBill from "../layout/admin/main/statusBill/StatusBill.vue"
+import CreateAdmin from "../layout/admin/main/create/CreateAdmin.vue"
+import Dashboard from "../layout/admin/main/dashboard/Dashboard.vue"
+import Decentralization from "../layout/admin/main/decentralization/Decentralization.vue"
+import ExportExcel from "../layout/admin/main/excel/ExportExcel.vue"
+import TableManagement from "../layout/admin/main/tablenumber/TableManagement.vue"
+import AddTable from "../layout/admin/main/tablenumber/AddTable.vue"
+import Menu from "../layout/admin/main/menu/Menu.vue"
+import FeelBack from "../layout/admin/main/feelBack/FeelBack.vue"
+import ListAccountAdmin from "../layout/admin/main/account/ListAccountAdmin.vue"
+import ManagerCart from "../layout/admin/main/statusBill/ManagerCart.vue"
 export default [
     {
-        path: '/admin',
+        path: `/${import.meta.env.VITE_APP_NAME}`,
         component: Main,
-        // meta: { requiresAuth: true },
+        meta: { requiresAuth: true },
         children: [
             {
                 path: 'dashboard',
                 component: Dashboard
-            }, 
+            },
 
             {
                 path: 'create',
@@ -34,11 +34,11 @@ export default [
                 children: [
                     {
                         path: ':id',
-                        component: () => import("../layout/Admin/Main/Edit/EditProduct.vue")
-                    }, 
+                        component: () => import("../layout/admin/main/edit/EditProduct.vue")
+                    },
                     {
                         path: 'history',
-                        component: () => import("../layout/Admin/Main/Edit/HisoricDelete.vue")
+                        component: () => import("../layout/admin/main/edit/HisoricDelete.vue")
                     }
                 ]
             },
@@ -56,15 +56,20 @@ export default [
             },
             {
                 path: 'manager',
-                component: ManagerBill
+                component: ManagerCart
+            },
+            {
+                path: 'listadmin',
+                component: ListAccountAdmin
             },
             {
                 path: 'createadmin',
                 component: CreateAdmin
             },
+
             {
                 path: 'decentralization',
-                component: Decentralization
+                component: Decentralization,
             },
             {
                 path: 'menu',
@@ -78,7 +83,7 @@ export default [
                 path: "feedback",
                 component: FeelBack
             }
-            
+
         ]
     },
 ]

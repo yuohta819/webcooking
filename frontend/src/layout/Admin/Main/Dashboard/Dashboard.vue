@@ -1,7 +1,7 @@
 <template>
     <DashboardStats />
-    <div class="flex gap-10 mt-20">
-        <PieProduct class="mt-10" />
+    <div class="flex gap-5 mt-20">
+        <PieProduct  />
         <SalesOverview />
     </div>
 </template>

@@ -11,17 +11,17 @@ import Cart from '../layout/client/Cart/Cart.vue';
 import Create from '../layout/client/Create/Create.vue';
 import Edit from '../layout/client/Edit/Edit.vue';
 import EditProduct from '../layout/client/Edit/EditProduct.vue';
-import Detaill from "../layout/Client/DetailAccount/Detail.vue";
+import Detaill from "../layout/client/DetailAccount/Detail.vue";
 import Step from "../layout/client/DetailAccount/Step.vue";
-import LoginAdmin from "../layout/Admin/LoginAdmin.vue";
-import OrderHistory from "../layout/Client/DetailAccount/OrderHistory.vue";
-import AccountDetail from "../layout/Client/DetailAccount/AccountDetail.vue";
-import ForgotPassword from "../layout/Client/Page/ForgotPassword.vue";
-import ResetPassword from "../layout/Client/Page/ResetPassword.vue";
-import Checkout from "../layout/Client/Cart/Checkout.vue";
-import MenuQr from "../layout/Client/Shop/MenuQr.vue";
-import Contact from "../layout/Client/Page/Contact.vue";
-import CommentHistoryPage from "../layout/Client/DetailAccount/CommentHistoryPage.vue";
+import LoginAdmin from "../layout/admin/LoginAdmin.vue";
+import OrderHistory from "../layout/client/DetailAccount/OrderHistory.vue";
+import AccountDetail from "../layout/client/DetailAccount/AccountDetail.vue";
+import ForgotPassword from "../layout/client/Page/ForgotPassword.vue";
+import ResetPassword from "../layout/client/Page/ResetPassword.vue";
+import Checkout from "../layout/client/Cart/Checkout.vue";
+import MenuQr from "../layout/client/Shop/MenuQr.vue";
+import Contact from "../layout/client/Page/Contact.vue";
+import CommentHistoryPage from "../layout/client/DetailAccount/CommentHistoryPage.vue";
 export default [
     { path: '/', name: 'AuthSuccess', component: Main, meta: { layout: 'client' } },
     { path: '/aboutus', component: AboutUs, meta: { layout: 'client' } },

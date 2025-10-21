@@ -74,7 +74,6 @@ public class PasswordResetService {
 
         return "success";
     }
-
     private void sendMail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);

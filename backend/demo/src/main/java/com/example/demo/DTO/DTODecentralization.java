@@ -5,11 +5,13 @@ public class DTODecentralization {
     private Boolean canAdd;
     private Boolean canEdit;
     private Boolean canDelete;
-    public DTODecentralization(String account, Boolean canAdd, Boolean canEdit, Boolean canDelete) {
+    private Integer accountid;
+    public DTODecentralization(String account, Boolean canAdd, Boolean canEdit, Boolean canDelete, Integer accountid) {
         this.account = account;
         this.canAdd = canAdd;
         this.canEdit = canEdit;
         this.canDelete = canDelete;
+        this.accountid = accountid;
     }
     public String getAccount() {
         return account;
@@ -35,6 +37,13 @@ public class DTODecentralization {
     public void setCanDelete(Boolean canDelete) {
         this.canDelete = canDelete;
     }
+    public Integer getAccountid() {
+        return accountid;
+    }
+    public void setAccountid(Integer accountid) {
+        this.accountid = accountid;
+    }
+    
     
    
 }

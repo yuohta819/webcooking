@@ -13,38 +13,40 @@ import com.example.demo.model.DBDecentralization;
 import jakarta.transaction.Transactional;
 
 public interface DataRepositoryDecentralization extends JpaRepository<DBDecentralization, Long> {
-   @Query(value = "SELECT a.account, p.canAdd, p.canEdit, p.canDelete " +
-         "FROM Permissions p JOIN Admin a ON a.id = p.id", nativeQuery = true)
-   List<DTODecentralization> getAllDecentralizations();
+      @Query(value = "SELECT a.account, p.can_add, p.can_edit, p.can_delete,a.accountid " +
+                  "FROM Permissions p JOIN Admin a ON a.accountid = p.accountid", nativeQuery = true)
+      List<DTODecentralization> getAllDecentralizations();
 
-   // Cập nhật quyền "Thêm"
-   @Transactional
-   @Modifying
-   @Query(value = "UPDATE p SET p.canAdd = :statusType " +
-         "FROM Permissions p " +
-         "JOIN Admin a ON a.id = p.id " +
-         "WHERE a.account = :name", nativeQuery = true)
-   void updateCanAdd(@Param("statusType") boolean statusType,
-         @Param("name") String name);
+      // Cập nhật quyền "Thêm"
+      @Transactional
+      @Modifying
+      @Query(value = "UPDATE p SET p.can_add = :statusType " +
+                  "FROM Permissions p " +
+                  "JOIN Admin a ON a.accountid = p.accountid  " +
+                  "WHERE a.accountid = :id", nativeQuery = true)
+      void updateCanAdd(@Param("statusType") boolean statusType,
+                  @Param("id") int id);
 
-   // Cập nhật quyền "Sửa"
-   @Transactional
-   @Modifying
-   @Query(value = "UPDATE p SET p.canEdit = :statusType " +
-         "FROM Permissions p " +
-         "JOIN Admin a ON a.id = p.id " +
-         "WHERE a.account = :name", nativeQuery = true)
-   void updateCanEdit(@Param("statusType") boolean statusType,
-         @Param("name") String name);
+      // Cập nhật quyền "Sửa"
+      @Transactional
+      @Modifying
+      @Query(value = "UPDATE p SET p.can_edit = :statusType " +
+                  "FROM Permissions p " +
+                  "JOIN Admin a ON a.accountid = p.accountid  " +
+                  "WHERE a.accountid = :id", nativeQuery = true)
+      void updateCanEdit(@Param("statusType") boolean statusType,
+                  @Param("id") int id);
 
-   // Cập nhật quyền "Xoá"
-   @Transactional
-   @Modifying
-   @Query(value = "UPDATE p SET p.canDelete = :statusType " +
-         "FROM Permissions p " +
-         "JOIN Admin a ON a.id = p.id " +
-         "WHERE a.account = :name", nativeQuery = true)
-   void updateCanDelete(@Param("statusType") boolean statusType,
-         @Param("name") String name);
+      // Cập nhật quyền "Xoá"
+      @Transactional
+      @Modifying
+      @Query(value = "UPDATE p SET p.can_delete = :statusType " +
+                  "FROM Permissions p " +
+                  "JOIN Admin a ON a.accountid = p.accountid " +
+                  "WHERE a.accountid = :id", nativeQuery = true)
+      void updateCanDelete(@Param("statusType") boolean statusType,
+                  @Param("id") int id);
+
+      
 
 }

@@ -125,6 +125,11 @@ const fetchFeedback = async () => {
 
 // Xóa (xóa mềm)
 const deleteFeedback = async (id) => {
+    const roles3 = sessionStorage.getItem("canDelete")
+    if (roles3 === 'false') {
+        toast.warning("Bạn không có quyền truy cập chức năng này !!!")
+        return
+    }
     try {
         await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/feedback/delete/${id}`);
         feedbackList.value = feedbackList.value.filter((f) => f.idfeedback !== id);
@@ -137,6 +142,11 @@ const deleteFeedback = async (id) => {
 
 // ✅ Cập nhật phản hồi admin theo từng hàng
 const editFeedback = async (fb) => {
+    const roles2 = sessionStorage.getItem("canEdit")
+    if (roles2 === 'false') {
+        toast.warning("Bạn không có quyền truy cập chức năng này !!!")
+        return
+    }
     try {
         const note = adminNotes.value[fb.idfeedback] || "";
         await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/feedback/update`, {

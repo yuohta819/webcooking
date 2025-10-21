@@ -1,170 +1,89 @@
-<script setup>
-import axios from 'axios';
-import { onMounted } from 'vue';
-import { ref } from 'vue';
-import { useToast } from "vue-toastification";
-import { useRouter } from 'vue-router';
-const account = ref('')
-const password = ref('')
-const name = ref('')
-const toast = useToast();
-const router = useRouter()
-async function handleSubmit() {
-    const response = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/admin/save`, {
-        params: {
-            password: password.value,
-            name: name.value
-        }
-
-    })
-    if (response.data !== false) {
-        loginSuccess()
-
-    } else {
-        loginFail();
-    }
-
-}
-
-function loginSuccess() {
-    toast.success("Account created successfully!");
-}
-function loginFail() {
-    toast.error("Account already exists");
-}
-function handlePassword(pass) {
-    password.value = pass
-}
-function handleName(infor) {
-    name.value = infor
-}
-</script>
-
 <template>
-    <div style="background-color: white;" class=" py-7 rounded-[15px]">
-        <div class="flex justify-between lg:mx-10">
-            <div class="px-10 w-145 rounded-[20px]" style="background-color: #F4F1EA;">
-                <div class="place-items-center py-10">
-                    <img src="https://www.ex-coders.com/php-template/fresheat/assets/img/logo/accountLogo.png" alt="">
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+        <div class="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-md border border-gray-100">
+            <!-- Tiêu đề -->
+            <h2 class="text-3xl font-extrabold text-center text-gray-800 mb-8">
+                Đăng ký tài khoản
+            </h2>
+
+            <!-- Form -->
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-gray-700 mb-2 font-semibold">Họ và tên</label>
+                    <input v-model="name" type="text" placeholder="Nhập họ và tên"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" />
                 </div>
-                <div class="text-center text-[40px] font-black">Welcome Back</div>
-                <div class="text-center py-1 font-normal">Please Enter Your Details</div>
-                <div class="mt-10 ">
-                    <input class="py-5 pl-3" type="text" @input="handleName($event.target.value)" placeholder="Name"
-                        style="width: 100%; background: white;">
+
+                <div>
+                    <label class="block text-gray-700 mb-2 font-semibold">Email</label>
+                    <input v-model="email" type="email" placeholder="Nhập email"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" />
                 </div>
-                <div class="mt-5 ">
-                    <input class="py-5 pl-3" type="text" @input="handlePassword($event.target.value)"
-                        placeholder="Password" style="width: 100%; background: white;">
+
+                <div>
+                    <label class="block text-gray-700 mb-2 font-semibold">Số điện thoại</label>
+                    <input v-model="phone" type="text" placeholder="Nhập số điện thoại"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" />
                 </div>
-                <div class="my-5  relative" @click="handleSubmit">
-                    <div class="py-3 text-center button  rounded-[50px] flex items-center justify-around px-39"
-                        style="background: #EB0029; color: white !important;">
-                        <div class="font-bold text-[14px] relative z-3 "> Register
-                        </div>
-                        <div class="box-1 "></div>
-                        <div class="box-2"></div>
-                    </div>
+
+                <div>
+                    <label class="block text-gray-700 mb-2 font-semibold">Mật khẩu</label>
+                    <input v-model="password" type="password" placeholder="Nhập mật khẩu"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" />
                 </div>
             </div>
-            <div class="w-140 lg:block hidden">
-                <img src="https://www.ex-coders.com/php-template/fresheat/assets/img/profile/profile.png" alt="">
+
+            <div class="mt-5">
+                <!-- Nút đăng ký -->
+                <button @click="handleSubmit"
+                    class="mt-10  w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-[1.03]">
+                    Đăng ký
+                </button>
             </div>
         </div>
     </div>
 </template>
 
-<style scoped>
-.content {
-    color: black;
-    transition: color 1s ease;
-}
+<script setup>
+import axios from 'axios'
+import { ref } from 'vue'
+import { useToast } from "vue-toastification"
+import { useRouter } from 'vue-router'
 
-.content:hover {
-    color: white;
+const name = ref('')
+const email = ref('')
+const phone = ref('')
+const password = ref('')
+const toast = useToast()
+const router = useRouter()
+const roles = sessionStorage.getItem("canAdd")
+if (roles === 'false') {
+  toast.warning("Bạn không có quyền truy cập chức năng này !!!")
+ router.push(`/${import.meta.env.VITE_APP_NAME}`)
 }
+async function handleSubmit() {
+    if (!name.value || !email.value || !phone.value || !password.value) {
+        toast.warning("Vui lòng điền đầy đủ thông tin.")
+        return
+    }
 
-.button:hover .content {
-    color: white;
+    try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/admin/save`, {
+            params: {
+                name: name.value,
+                email: email.value,
+                phone: phone.value,
+                password: password.value
+            }
+        })
+
+        if (response.data === '') {
+            toast.success("Tạo tài khoản thành công!")
+        } else {
+            toast.error("Tài khoản đã tồn tại.")
+        }
+    } catch (error) {
+        toast.error("Đã xảy ra lỗi, vui lòng thử lại.")
+    }
 }
-
-.button {
-    color: white;
-    height: 40.8px;
-    position: relative;
-    overflow: hidden;
-    z-index: 5;
-    cursor: pointer;
-}
-
-.button .button,
-.button i {
-    position: relative;
-    z-index: 10;
-    cursor: pointer;
-}
-
-.box-1 {
-    position: absolute;
-    width: 100%;
-    height: 50%;
-    top: 0;
-    left: 0;
-    overflow: hidden;
-}
-
-.box-1::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: -100%;
-    width: 100%;
-    height: 100%;
-    background: #FC781A;
-    transition: right 0.5s ease;
-}
-
-.box-2 {
-    position: absolute;
-    width: 100%;
-    height: 50%;
-    bottom: 0;
-    left: 0;
-    overflow: hidden;
-}
-
-.box-2::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: #FC781A;
-    transition: left 0.5s ease;
-}
-
-
-.button:hover .box-1::before {
-    right: 0;
-    color: white;
-}
-
-.button:hover .box-2::before {
-    left: 0;
-    color: white;
-}
-
-.img-2 {
-    background: url('https://www.ex-coders.com/php-template/fresheat/assets/img/bg/breadcumb.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-input {
-    border: 1px solid #D4DCFF;
-    outline: none;
-    border-radius: 8px;
-}
-</style>
+</script>

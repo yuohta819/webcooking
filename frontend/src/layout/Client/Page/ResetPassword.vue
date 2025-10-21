@@ -5,29 +5,18 @@
 
       <div class="mb-4">
         <label class="block text-gray-700 font-medium mb-2">New Password</label>
-        <input
-          v-model="password"
-          type="password"
-          placeholder="Enter new password"
-          class="border border-gray-300 w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-        />
+        <input v-model="password" type="password" placeholder="Enter new password"
+          class="border border-gray-300 w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition" />
       </div>
 
       <div class="mb-6">
         <label class="block text-gray-700 font-medium mb-2">Confirm Password</label>
-        <input
-          v-model="confirmPassword"
-          type="password"
-          placeholder="Confirm new password"
-          class="border border-gray-300 w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-        />
+        <input v-model="confirmPassword" type="password" placeholder="Confirm new password"
+          class="border border-gray-300 w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition" />
       </div>
 
-      <button
-        @click="resetPassword"
-        :disabled="loading"
-        class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
+      <button @click="resetPassword" :disabled="loading"
+        class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
         <span v-if="!loading">Change Password</span>
         <span v-else>Processing...</span>
       </button>
@@ -36,11 +25,11 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import axios from "axios"
 import { useToast } from "vue-toastification"
-
+import AuthorSucess from "./AuthorSucess.vue"
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
@@ -49,11 +38,21 @@ const password = ref("")
 const confirmPassword = ref("")
 const loading = ref(false)
 const token = route.query.token
-  if (!token) {
+console.log(token)
+onMounted( async () => {
+  const checkRes = await axios.get(
+    `${import.meta.env.VITE_API_URL_BACKEND}/auth/check-token`, {
+      params: {
+        param: token
+      }
+    }
+  )
+  if (checkRes.data === '') {
     router.push("/account/login")
   }
+})
 async function resetPassword() {
-  
+
 
   if (!password.value || !confirmPassword.value) {
     toast.error("Please fill in all fields.")

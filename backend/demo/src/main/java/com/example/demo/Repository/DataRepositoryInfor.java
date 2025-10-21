@@ -9,37 +9,37 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.demo.DTO.DTOHistory;
 import com.example.demo.DTO.DTONumberOfTimes;
-import com.example.demo.model.DBBill;
+import com.example.demo.model.DBCart;
 import com.example.demo.model.DBMenu;
 
 import jakarta.transaction.Transactional;
 
-public interface DataRepositoryInfor extends JpaRepository<DBBill, Long> {
-    @Query("SELECT a FROM DBBill a WHERE a.billid = :id")
-    List<DBBill> findAllBill(@Param("id") Long id);
+public interface DataRepositoryInfor extends JpaRepository<DBCart, Long> {
+    @Query("SELECT a FROM DBCart a WHERE a.cartid = :id")
+    List<DBCart> findAllBill(@Param("id") Long id);
 
-    @Query("SELECT a FROM DBBill a JOIN a.menu WHERE a.account=:account")
-    List<DBBill> findUsersId(@Param("account") String account);
+    @Query("SELECT a FROM DBCart a JOIN a.menu WHERE a.account=:account")
+    List<DBCart> findUsersId(@Param("account") String account);
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM DBBill m WHERE m.idproduct = :id ")
+    @Query("UPDATE DBMenu m SET m.isDeleted = True WHERE m.id = :id ")
     void deletedid(@Param("id") Long id);
 
-    @Query("SELECT d FROM DBBill d")
-    List<DBBill> findAllBill(); // tên gì cũng được nếu có @Query
+    @Query("SELECT d FROM DBCart d")
+    List<DBCart> findAllBill(); // tên gì cũng được nếu có @Query
 
     DTONumberOfTimes number = new DTONumberOfTimes();
 
     @Query("SELECT new com.example.demo.DTO.DTONumberOfTimes(m.name, CAST(COUNT(b) AS long)) " +
-            "FROM DBBill b JOIN DBMenu m ON  b.idproduct = m.id GROUP BY m.name")
+            "FROM DBBills b JOIN DBMenu m ON  b.idproduct = m.id GROUP BY m.name")
 
     List<DTONumberOfTimes> getNumberOfTimes();
 
-    @Query("SELECT SUM(m.price) FROM DBBill b JOIN DBMenu m ON b.idproduct = m.id ")
+    @Query("SELECT SUM(m.price) FROM DBCart b JOIN DBMenu m ON b.idproduct = m.id ")
     int getAllPrice();
 
-    @Query("SELECT COUNT(*) FROM DBBill b ")
+    @Query("SELECT COUNT(*) FROM DBCart b ")
     int getCountOrder();
 
     @Query(value = """

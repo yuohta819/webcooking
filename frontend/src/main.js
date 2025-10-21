@@ -26,21 +26,35 @@ const router = createRouter({
   routes,
 });
 
-// 🧩 Middleware kiểm tra quyền truy cập
 router.beforeEach((to, from, next) => {
-  const admin = JSON.parse(localStorage.getItem('admin') || sessionStorage.getItem('admin') || 'null');
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  let admin = null;
 
-  // ✅ Nếu route yêu cầu quyền đăng nhập admin
-  if (requiresAuth && !admin) {
-    next('/admin/login');
-  } else if (to.path === '/admin/login' && admin) {
-    // ✅ Nếu đã login mà cố vào lại trang login thì đẩy về dashboard
-    next('/admin/dashboard');
-  } else {
-    next();
+  try {
+    const adminData = localStorage.getItem('admin') || sessionStorage.getItem('admin');
+    admin = adminData ? JSON.parse(adminData) : null;
+  } catch (e) {
+    console.warn('⚠️ Lỗi JSON.parse admin:', e);
+    // Xóa dữ liệu sai để tránh lặp lại lỗi
+    localStorage.removeItem('admin');
+    sessionStorage.removeItem('admin');
   }
+
+  // Kiểm tra route
+  if (to.path.startsWith('/admin')) {
+    if (!admin && to.path !== '/admin/login') {
+      return next({ path: '/admin/login' });
+    }
+    if (admin && to.path === '/admin/login') {
+      return next({ path: '/admin/dashboard' });
+    }
+  }
+
+  next();
 });
+
+
+
+
 
 // 🧩 Khởi tạo app
 const app = createApp(App);

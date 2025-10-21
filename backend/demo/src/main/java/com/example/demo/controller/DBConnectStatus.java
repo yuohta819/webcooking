@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.DTO.DTOStatus;
 import com.example.demo.Repository.DataRepositoryAccount;
+import com.example.demo.Repository.DataRepositoryBill;
 import com.example.demo.Repository.DataRepositoryInfor;
 import com.example.demo.Repository.DataRepositoryMenu;
 import com.example.demo.Repository.DataRepositoryStatus;
 import com.example.demo.model.DBAccount;
+import com.example.demo.model.DBBills;
 import com.example.demo.model.DBMenu;
 import com.example.demo.model.DBStatus;
 import com.example.demo.service.OrderService;
@@ -33,13 +35,11 @@ public class DBConnectStatus {
     @Autowired
     private DataRepositoryStatus connect;
     @Autowired
-    private DBConnectAccount accountget;
-    @Autowired
     private DataRepositoryAccount account;
     @Autowired
-    private DataRepositoryMenu menu;
-    @Autowired
     private DataRepositoryInfor infor;
+    @Autowired
+    private DataRepositoryBill bill;
 
     @PostMapping("/save")
     public String postMethodName(@RequestBody Map<String, Object> map) {
@@ -80,7 +80,7 @@ public class DBConnectStatus {
             status.setSo_ban(connect.getNameTable(Integer.parseInt(accountid)).replaceAll("\\D+", "") + "");
             connect.save(status);
         }
-    
+
         return "";
     }
 
@@ -91,23 +91,32 @@ public class DBConnectStatus {
     }
 
     @PostMapping("/update")
-    public String postMethodName(@RequestParam Long id, @RequestParam Boolean check, @RequestParam String type) {
+    public String updateStatus(@RequestBody Map<String, Object> body) {
+        Long id = Long.parseLong(body.get("id").toString());
+        Boolean check = Boolean.parseBoolean(body.get("check").toString());
+        String type = body.get("type").toString();
+        int account = Integer.parseInt(body.get("account").toString());
+        String name = body.get("name").toString();
+        int idproduct = Integer.parseInt(body.get("idproduct").toString());
+
         if (type.equals("status1")) {
             connect.updateStatus1(id, check);
-        }
-        if (type.equals("status2")) {
+        } else if (type.equals("status2")) {
             connect.updateStatus2(id, check);
-        }
-        if (type.equals("status3")) {
+        } else if (type.equals("status3")) {
             connect.updateStatus3(id, check);
             connect.updateBill();
             connect.updateTongTien();
-        }
-        if (type.equals("delete")) {
+            if (check) {
+                bill.save(new DBBills(name,idproduct,account,id));
+            } else {
+                bill.deleteBill(id);
+            }
+        } else if (type.equals("delete")) {
             connect.updateDelete(id, check);
-
         }
-        return "";
+
+        return "OK";
     }
 
     @PostMapping("/follow")

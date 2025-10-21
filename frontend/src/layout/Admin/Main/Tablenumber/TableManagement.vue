@@ -7,7 +7,7 @@
             <div class="flex justify-between mb-4">
                 <input v-model="search" type="text" placeholder="Tìm kiếm theo tên bàn..."
                     class="border rounded-lg px-4 py-2 w-1/3 focus:ring-2 focus:ring-indigo-500 outline-none" />
-                <a href="/admin/addtable" style="color: white;">
+                <a :href="`/${appName}/addtable`" style="color: white;">
                     <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
                         + Thêm bàn
                     </button>
@@ -69,11 +69,13 @@
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import ConfirmModal from "../../../../components/ConfirmModal.vue";
-
+import { useToast } from "vue-toastification";
 const tables = ref([]);
 const search = ref("");
 const confirmModal = ref(null);
+const appName = import.meta.env.VITE_APP_NAME
 
+const toast = useToast()
 // Tách hàm load lại dữ liệu từ server
 const loadTables = async () => {
     try {
@@ -103,6 +105,11 @@ const formatDate = (date) => new Date(date).toLocaleDateString("vi-VN");
 
 // Cập nhật accountid (sau cập nhật sẽ gọi lại loadTables để đồng bộ từ server)
 const updateAccountId = async (table) => {
+    const roles = sessionStorage.getItem("canAdd")
+    if (roles === 'false') {
+        toast.warning("Bạn không có quyền truy cập chức năng này !!!")
+        return
+    }
     if (!table.accountid) {
         alert("Vui lòng nhập mã tài khoản!");
         return;
@@ -110,8 +117,8 @@ const updateAccountId = async (table) => {
 
     try {
         await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/number/update`, {
-                accountid: table.accountid,
-                id: table.table_id
+            accountid: table.accountid,
+            id: table.table_id
         });
         // Sau khi update thành công -> lấy lại danh sách từ server
         await loadTables();
@@ -124,6 +131,11 @@ const updateAccountId = async (table) => {
 
 // Xóa bàn: mở modal, nếu confirm -> gọi API xóa rồi gọi loadTables()
 const deleteTable = async (id) => {
+    const roles3 = sessionStorage.getItem("canDelete")
+    if (roles3 === 'false') {
+        toast.warning("Bạn không có quyền truy cập chức năng này !!!")
+        route.push(`/${import.meta.env.VITE_APP_NAME}/tablenumber`)
+    }
     const table = tables.value.find((t) => t.table_id === id);
     const name = table ? table.table_name : `ID ${id}`;
 

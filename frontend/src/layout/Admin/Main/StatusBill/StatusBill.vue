@@ -16,7 +16,10 @@ interface StatusItem {
 const list = ref<StatusItem[]>([]);
 const currentPage = ref(1);
 const itemsPerPage = 5;
-
+let account = localStorage.getItem("account")
+if (account) {
+  account = sessionStorage.getItem("account")
+}
 // Gọi API
 onMounted(async () => {
   const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/status/find`);
@@ -24,11 +27,19 @@ onMounted(async () => {
 });
 
 // Cập nhật trạng thái
-async function handleStatus(id: string, status: boolean, index: number, type: string) {
+async function handleStatus(item: string, status: boolean, index: number, type: string) {
   try {
-    await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/status/update`, null, {
-      params: { id, check: !status, type },
+    console.log(item)
+    await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/status/update`, {
+      id: item.statusid,
+      check: !status,
+      type,
+      account: item.accountid,
+      idproduct: item.idproduct,
+      name: item.name,
     });
+
+
 
     const globalIndex = (currentPage.value - 1) * itemsPerPage + index;
     switch (type) {
@@ -87,11 +98,8 @@ function nextPage() {
           </thead>
 
           <tbody>
-            <tr
-              v-for="(item, index) in paginatedList"
-              :key="index"
-              class="border-t border-gray-200 hover:bg-gray-50 transition"
-            >
+            <tr v-for="(item, index) in paginatedList" :key="index"
+              class="border-t border-gray-200 hover:bg-gray-50 transition">
               <td class="py-3 px-4 font-medium text-gray-800">{{ item.billid }}</td>
               <td class="py-3 px-4 text-gray-700">{{ item.name }}</td>
               <td class="py-3 px-4 text-center text-gray-800 font-semibold">
@@ -100,60 +108,48 @@ function nextPage() {
 
               <!-- Trạng thái 1 -->
               <td class="py-3 px-4 text-center">
-                <button
-                  @click="handleStatus(item.statusid, item.status1, index, 'status1')"
-                  :class="[
-                    'px-4 py-2 rounded-lg font-medium shadow-sm transition',
-                    item.status1
-                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                  ]"
-                >
+                <button @click="handleStatus(item, item.status1, index, 'status1')" :class="[
+                  'px-4 py-2 rounded-lg font-medium shadow-sm transition',
+                  item.status1
+                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                ]">
                   {{ item.status1 ? 'Đã xác nhận' : 'Chờ xác nhận' }}
                 </button>
               </td>
 
               <!-- Trạng thái 2 -->
               <td class="py-3 px-4 text-center">
-                <button
-                  @click="handleStatus(item.statusid, item.status2, index, 'status2')"
-                  :class="[
-                    'px-4 py-2 rounded-lg font-medium shadow-sm transition',
-                    item.status2
-                      ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                  ]"
-                >
+                <button @click="handleStatus(item, item.status2, index, 'status2')" :class="[
+                  'px-4 py-2 rounded-lg font-medium shadow-sm transition',
+                  item.status2
+                    ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                ]">
                   {{ item.status2 ? 'Đã thực hiện' : 'Chờ thực hiện' }}
                 </button>
               </td>
 
               <!-- Trạng thái 3 -->
               <td class="py-3 px-4 text-center">
-                <button
-                  @click="handleStatus(item.statusid, item.status3, index, 'status3')"
-                  :class="[
-                    'px-4 py-2 rounded-lg font-medium shadow-sm transition',
-                    item.status3
-                      ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                  ]"
-                >
+                <button @click="handleStatus(item, item.status3, index, 'status3')" :class="[
+                  'px-4 py-2 rounded-lg font-medium shadow-sm transition',
+                  item.status3
+                    ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                ]">
                   {{ item.status3 ? 'Đã giao' : 'Đang giao' }}
                 </button>
               </td>
 
               <!-- 🔹 Trạng thái xóa -->
               <td class="py-3 px-4 text-center">
-                <button
-                  @click="handleStatus(item.statusid, item.is_deleted_status, index, 'delete')"
-                  :class="[
-                    'px-4 py-2 rounded-lg font-medium shadow-sm transition',
-                    item.is_deleted_status
-                      ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                  ]"
-                >
+                <button @click="handleStatus(item, item.is_deleted_status, index, 'delete')" :class="[
+                  'px-4 py-2 rounded-lg font-medium shadow-sm transition',
+                  item.is_deleted_status
+                    ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                ]">
                   {{ item.is_deleted_status ? 'Đã xóa' : 'Còn hoạt động' }}
                 </button>
               </td>
@@ -168,11 +164,8 @@ function nextPage() {
 
       <!-- Phân trang -->
       <div class="flex justify-center items-center mt-6 gap-3">
-        <button
-          @click="prevPage"
-          :disabled="currentPage === 1"
-          class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium disabled:opacity-50"
-        >
+        <button @click="prevPage" :disabled="currentPage === 1"
+          class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium disabled:opacity-50">
           Trước
         </button>
 
@@ -180,11 +173,8 @@ function nextPage() {
           Trang {{ currentPage }} / {{ totalPages }}
         </span>
 
-        <button
-          @click="nextPage"
-          :disabled="currentPage === totalPages"
-          class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium disabled:opacity-50"
-        >
+        <button @click="nextPage" :disabled="currentPage === totalPages"
+          class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium disabled:opacity-50">
           Sau
         </button>
       </div>

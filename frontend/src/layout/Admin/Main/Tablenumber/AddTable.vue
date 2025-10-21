@@ -47,7 +47,7 @@
         <!-- Nút hành động -->
         <div class="flex justify-between items-center pt-4">
           <router-link
-            to="/admin/tablenumber"
+            :to="`/${appName}/tablenumber`"
             class="text-gray-600 hover:text-indigo-600 transition font-medium"
           >
             ← Quay lại danh sách
@@ -74,7 +74,7 @@ import { ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-
+const appName = import.meta.env.VITE_APP_NAME
 const router = useRouter();
 const message = ref("");
 const toast = useToast();
@@ -100,7 +100,7 @@ const submitForm = async () => {
     });
 
     toast.success("✅ Thêm bàn mới thành công!");
-    setTimeout(() => router.push("/admin/tablenumber"), 1500);
+    setTimeout(() => router.push(`/${import.meta.env.VITE_APP_NAME}/tablenumber`), 1500);
   } catch (error) {
     console.error(error);
     message.value = "❌ Thêm bàn thất bại!";

@@ -19,8 +19,8 @@
           <!-- Cột quyền thêm -->
           <td class="text-center py-3">
             <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" :checked="role.canAdd" class="sr-only peer"   v-model="role.canAdd"
-                @change="handleChange(role.account, role.canAdd, 'canAdd')"  />
+              <input type="checkbox" :checked="role.canAdd" class="sr-only peer" v-model="role.canAdd"
+                @change="handleChange(role.accountid, role.canAdd, 'canAdd')" />
               <div
                 class="w-11 h-6 rounded-full bg-gray-300 transition-colors duration-300 ease-in-out peer-checked:bg-blue-500">
               </div>
@@ -33,7 +33,7 @@
           <td class="text-center py-3">
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" class="sr-only peer" :checked="role.canEddit"
-                @change="handleChange(role.account, $event.target.checked, 'canEdit')" v-model="role.canEdit" />
+                @change="handleChange(role.accountid, $event.target.checked, 'canEdit')" v-model="role.canEdit" />
               <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500
                transition-colors duration-300 ease-in-out"></div>
               <div class="absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full
@@ -46,7 +46,7 @@
           <td class="text-center py-3">
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" class="sr-only peer" :checked="role.canDelete"
-                @change="handleChange(role.account, $event.target.checked, 'canDelete')" v-model="role.canDelete" />
+                @change="handleChange(role.accountid, $event.target.checked, 'canDelete')" v-model="role.canDelete" />
               <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-red-500
                transition-colors duration-300 ease-in-out"></div>
               <div class="absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full
@@ -64,7 +64,18 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import axios from "axios"
+import { useToast } from 'vue-toastification'
+import { useRouter } from 'vue-router'
 const data = ref([])
+const router = useRouter()
+const toast = useToast()
+const role1 = sessionStorage.getItem("canAdd")
+const role2 = sessionStorage.getItem("canEdit")
+const role3 = sessionStorage.getItem("canDelete")
+if (role1 === 'false' || role2 === 'false' || role3 === 'false') {
+    toast.warning("Bạn không có quyền thay đổi chức năng này !!!")
+    router.push(`/${import.meta.env.VITE_APP_NAME}/dashboard`)
+  }
 onMounted(async () => {
   const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/account/decentralization`)
   data.value = res.data.map(role => ({
@@ -74,14 +85,14 @@ onMounted(async () => {
     canDelete: Boolean(role.canDelete)
 
   }))
-  console.log(res.data)
 
 })
-async function handleChange(name, per, type) {
+async function handleChange(accountid, per, type) {
+  
   const res = await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/account/per`, {
     type: type,
     statusType: per,
-    name: name,
+    accountid: accountid,
   })
 }
 

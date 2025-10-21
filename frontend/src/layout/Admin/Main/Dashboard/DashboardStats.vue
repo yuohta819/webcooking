@@ -42,10 +42,9 @@ const data = ref(null) // sẽ lưu response từ API
 
 onMounted(async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/bill/allprice`)
+    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/cart/allprice`)
     // đảm bảo gán đúng biến (fix typo)
     data.value = res.data
-    console.log('API data:', data.value)
   } catch (err) {
     console.error('Lấy dữ liệu thất bại', err)
     data.value = null

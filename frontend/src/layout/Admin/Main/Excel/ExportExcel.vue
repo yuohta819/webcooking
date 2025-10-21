@@ -4,10 +4,8 @@
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-semibold">Thống kê tài khoản</h2>
         <div class="flex items-center gap-2">
-          <button
-            @click="exportCurrentPageToExcel"
-            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition"
-          >
+          <button @click="exportCurrentPageToExcel"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition">
             Xuất Excel (trang hiện tại)
           </button>
           <select v-model.number="rowsPerPage" class="border rounded-md px-2 py-1">
@@ -30,7 +28,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
-          <tr v-for="(item,index) in visibleRows" :key="item.id" class="hover:bg-gray-50">
+          <tr v-for="(item, index) in visibleRows" :key="item.id" class="hover:bg-gray-50">
             <td class="px-4 py-2">{{ index + 1 }}</td>
             <td class="px-4 py-2">{{ item.accountUsername }}</td>
             <td class="px-4 py-2">{{ item.username }}</td>
@@ -44,8 +42,10 @@
       <div class="flex items-center justify-between mt-4">
         <div class="text-sm text-gray-600">Hiển thị trang {{ currentPage }} / {{ totalPages }}</div>
         <div class="flex items-center gap-2">
-          <button @click="prevPage" :disabled="currentPage === 1" class="px-3 py-1 border rounded disabled:opacity-50">Prev</button>
-          <button @click="nextPage" :disabled="currentPage === totalPages" class="px-3 py-1 border rounded disabled:opacity-50">Next</button>
+          <button @click="prevPage" :disabled="currentPage === 1"
+            class="px-3 py-1 border rounded disabled:opacity-50">Prev</button>
+          <button @click="nextPage" :disabled="currentPage === totalPages"
+            class="px-3 py-1 border rounded disabled:opacity-50">Next</button>
         </div>
       </div>
     </div>
@@ -56,24 +56,28 @@
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import * as XLSX from 'xlsx'
-
-
+import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
 const data = ref([])
 const currentPage = ref(1)
 const rowsPerPage = ref(10)
-
+const toast = useToast()
 const totalPages = computed(() => Math.max(1, Math.ceil(data.value.length / rowsPerPage.value)))
 
 const visibleRows = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value
   return data.value.slice(start, start + rowsPerPage.value)
 })
-
+const roles = sessionStorage.getItem("canAdd")
+const router = useRouter()
+if (roles === 'false') {
+  toast.warning("Bạn không có quyền truy cập chức năng này !!!")
+  router.push(`/${import.meta.env.VITE_APP_NAME}`)
+}
 onMounted(async () => {
   try {
     const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/statistic/call`)
     data.value = res.data
-    console.log(data.value)
   } catch (err) {
     console.error('Lỗi tải dữ liệu:', err)
   }
@@ -94,8 +98,8 @@ function formatDate(v) {
 }
 
 function exportCurrentPageToExcel() {
-  const rows = visibleRows.value.map((r,index) => ({
-    ID: index+1 ,
+  const rows = visibleRows.value.map((r, index) => ({
+    ID: index + 1,
     'Tài Khoản': r.accountUsername,
     Username: r.username,
     'Tổng số đơn': r.tongSoDon,

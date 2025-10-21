@@ -43,4 +43,15 @@ public interface DataRepositoryAccount extends JpaRepository<DBAccount, Long> {
 
     @Query("SELECT d.accountid FROM DBAccount d WHERE d.username = :email")
     Integer getIdAccountGoogle(@Param("email") String email);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE DBAdmin\r\n" + //
+            "   SET account = :account\r\n" + //
+            "      ,email = :email\r\n" + //
+            " WHERE accountid = :id")
+    void updateAdmin(@Param("account") String account, @Param("email") String email, @Param("id") Integer id);
+
+    @Query("SELECT d.accountid FROM DBAdmin d WHERE d.email=:email")
+    Integer checkEmail(@Param("email") String email);
 }

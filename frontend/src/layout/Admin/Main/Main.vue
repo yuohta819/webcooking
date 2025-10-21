@@ -9,6 +9,7 @@ const selectedKeys2 = ref([''])
 const openKeys = ref([''])
 const route = useRoute()
 const name = localStorage.getItem("account")
+const appName = import.meta.env.VITE_APP_NAME
 
 onMounted(() => {
   nextTick(() => updateSelectedKeys(route.path))
@@ -17,36 +18,40 @@ onMounted(() => {
 watch(() => route.path, (newPath) => updateSelectedKeys(newPath))
 
 function updateSelectedKeys(path: string) {
-  if (path.includes('/admin/createadmin')) {
+  if (path.includes(`/${import.meta.env.VITE_APP_NAME}/createadmin`)) {
     selectedKeys2.value = ['5']
     openKeys.value = ['sub4']
-  } else if (path.includes('/admin/create')) {
+  } else if (path.includes(`/${import.meta.env.VITE_APP_NAME}/create`)) {
     selectedKeys2.value = ['1']
     openKeys.value = ['sub1']
-  } else if (path.includes('/admin/edit')) {
+  } else if (path.includes(`/${import.meta.env.VITE_APP_NAME}/edit`)) {
     selectedKeys2.value = ['2']
     openKeys.value = ['sub2']
-  } else if (path.includes('/admin/bill')) {
+  } else if (path.includes(`/${import.meta.env.VITE_APP_NAME}/bill`)) {
     selectedKeys2.value = ['3']
     openKeys.value = ['sub3']
-  } else if (path.includes('/admin/manager')) {
+  } else if (path.includes(`/${import.meta.env.VITE_APP_NAME}/manager`)) {
     selectedKeys2.value = ['4']
     openKeys.value = ['sub4']
-  } else if (path.includes('/admin/dashboard')) {
+  } else if (path.includes(`/${import.meta.env.VITE_APP_NAME}/dashboard`)) {
     selectedKeys2.value = ['6']
     openKeys.value = ['sub6']
-  } else if (path.includes('/admin/decentralization')) {
+  } else if (path.includes(`/${import.meta.env.VITE_APP_NAME}/decentralization`)) {
     selectedKeys2.value = ['7']
     openKeys.value = ['sub7']
-  } else if (path.includes('/admin/tablenumber')) {
+  } else if (path.includes(`/${import.meta.env.VITE_APP_NAME}/tablenumber`)) {
     selectedKeys2.value = ['9']
-    openKeys.value = ['sub10']
-  } else if (path.includes('/admin/menu')) {
+    openKeys.value = ['sub9']
+  } else if (path.includes(`/${import.meta.env.VITE_APP_NAME}/menu`)) {
     selectedKeys2.value = ['10']
-    openKeys.value = ['sub11']
-  } else if (path.includes('/admin/feedback')) {
+    openKeys.value = ['sub10']
+  } else if (path.includes(`/${import.meta.env.VITE_APP_NAME}/feedback`)) {
     selectedKeys2.value = ['11']
     openKeys.value = ['sub11']
+  }
+   else if (path.includes(`/${import.meta.env.VITE_APP_NAME}/listadmin`)) {
+    selectedKeys2.value = ['12']
+    openKeys.value = ['sub4']
   }
   else {
     selectedKeys2.value = ['']
@@ -73,7 +78,7 @@ function updateSelectedKeys(path: string) {
                   <EditOutlined /><span class="ml-3">Tổng Quan</span>
                 </div>
               </template>
-              <a-menu-item key="6" @click="$router.push('/admin/dashboard')">Tổng Quan</a-menu-item>
+              <a-menu-item key="6" @click="$router.push(`/${appName}/dashboard`)">Tổng Quan</a-menu-item>
             </a-sub-menu>
 
             <a-sub-menu key="sub1">
@@ -82,7 +87,7 @@ function updateSelectedKeys(path: string) {
                   <ShoppingOutlined /><span class="ml-3">Tạo Sản Phẩm</span>
                 </div>
               </template>
-              <a-menu-item key="1" @click="$router.push('/admin/create')">Tạo Sản Phẩm</a-menu-item>
+              <a-menu-item key="1" @click="$router.push(`/${appName}/create`)">Tạo Sản Phẩm</a-menu-item>
             </a-sub-menu>
 
             <a-sub-menu key="sub2">
@@ -91,7 +96,7 @@ function updateSelectedKeys(path: string) {
                   <EditOutlined /><span class="ml-3">Sửa Sản Phẩm</span>
                 </div>
               </template>
-              <a-menu-item key="2" @click="$router.push('/admin/edit')">Sửa Sản Phẩm</a-menu-item>
+              <a-menu-item key="2" @click="$router.push(`/${appName}/edit`)">Sửa Sản Phẩm</a-menu-item>
             </a-sub-menu>
 
             <a-sub-menu key="sub3">
@@ -100,7 +105,7 @@ function updateSelectedKeys(path: string) {
                   <QuestionCircleOutlined /><span class="ml-3">Đơn Hàng</span>
                 </div>
               </template>
-              <a-menu-item key="3" @click="$router.push('/admin/bill')">Trạng Thái Đơn Hàng</a-menu-item>
+              <a-menu-item key="3" @click="$router.push(`/${appName}/bill`)">Trạng Thái Đơn Hàng</a-menu-item>
             </a-sub-menu>
 
             <a-sub-menu key="sub9">
@@ -109,7 +114,7 @@ function updateSelectedKeys(path: string) {
                   <QuestionCircleOutlined /><span class="ml-3">Số Bàn</span>
                 </div>
               </template>
-              <a-menu-item key="9" @click="$router.push('/admin/tablenumber')">Số Bàn</a-menu-item>
+              <a-menu-item key="9" @click="$router.push(`/${appName}/tablenumber`)">Số Bàn</a-menu-item>
             </a-sub-menu>
             <a-sub-menu key="sub10">
               <template #title>
@@ -117,7 +122,7 @@ function updateSelectedKeys(path: string) {
                   <QuestionCircleOutlined /><span class="ml-3">Thực Đơn</span>
                 </div>
               </template>
-              <a-menu-item key="10" @click="$router.push('/admin/menu')">Thực Đơn</a-menu-item>
+              <a-menu-item key="10" @click="$router.push(`/${appName}/menu`)">Thực Đơn</a-menu-item>
             </a-sub-menu>
             <a-sub-menu key="sub4">
               <template #title>
@@ -125,8 +130,9 @@ function updateSelectedKeys(path: string) {
                   <LaptopOutlined /><span class="ml-3">Tài khoản</span>
                 </div>
               </template>
-              <a-menu-item key="4" @click="$router.push('/admin/manager')">Tài khoản khách hàng</a-menu-item>
-              <a-menu-item key="5" @click="$router.push('/admin/createadmin')">Tạo Tài khoản Admin</a-menu-item>
+              <a-menu-item key="4" @click="$router.push(`/${appName}/manager`)">Tài khoản khách hàng</a-menu-item>
+              <a-menu-item key="12" @click="$router.push(`/${appName}/listadmin`)">Tài khoản Admin</a-menu-item>
+              <a-menu-item key="5" @click="$router.push(`/${appName}/createadmin`)">Tạo Tài khoản Admin</a-menu-item>
             </a-sub-menu>
 
             <a-sub-menu key="sub7">
@@ -135,7 +141,7 @@ function updateSelectedKeys(path: string) {
                   <QuestionCircleOutlined /><span class="ml-3">Phân Quyền</span>
                 </div>
               </template>
-              <a-menu-item key="7" @click="$router.push('/admin/decentralization')">Phân Quyền</a-menu-item>
+              <a-menu-item key="7" @click="$router.push(`/${appName}/decentralization`)">Phân Quyền</a-menu-item>
             </a-sub-menu>
             <a-sub-menu key="sub11">
               <template #title>
@@ -143,7 +149,7 @@ function updateSelectedKeys(path: string) {
                   <QuestionCircleOutlined /><span class="ml-3">Bình Luận</span>
                 </div>
               </template>
-              <a-menu-item key="11" @click="$router.push('/admin/feedback')">Bình Luận</a-menu-item>
+              <a-menu-item key="11" @click="$router.push(`/${appName}/feedback`)">Bình Luận</a-menu-item>
             </a-sub-menu>
             <a-sub-menu key="sub8">
               <template #title>
@@ -151,7 +157,7 @@ function updateSelectedKeys(path: string) {
                   <QuestionCircleOutlined /><span class="ml-3">Xuất File Excel</span>
                 </div>
               </template>
-              <a-menu-item key="8" @click="$router.push('/admin/excel/export')">Xuất File Excel</a-menu-item>
+              <a-menu-item key="8" @click="$router.push(`/${appName}/excel/export`)">Xuất File Excel</a-menu-item>
             </a-sub-menu>
           </a-menu>
         </a-layout-sider>

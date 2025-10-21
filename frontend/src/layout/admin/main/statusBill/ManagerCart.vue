@@ -22,8 +22,9 @@ const currentPage = ref(1);
 const itemsPerPage = 6; // ✅ mỗi trang 6 sản phẩm
 
 onMounted(async () => {
-  const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/bill/account`);
+  const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/bill/call`);
   list.value = res.data;
+  console.log(res.data)
 });
 
 // ✅ Tính tổng số trang
@@ -76,7 +77,7 @@ const prevPage = () => {
             <td class="px-6 py-4 font-medium text-gray-500">
               {{ (currentPage - 1) * itemsPerPage + index + 1 }}
             </td>
-            <td class="px-6 py-4">{{ item.account }}</td>
+            <td class="px-6 py-4">{{ item.account.username }}</td>
             <td class="px-6 py-4">{{ item.name }}</td>
             <td class="px-6 py-4 flex items-center gap-3">
               <img
@@ -88,7 +89,7 @@ const prevPage = () => {
               <span>{{ item.menu?.name }}</span>
             </td>
             <td class="px-6 py-4 font-semibold text-amber-700">
-              {{ item.menu?.price }}₫
+              {{ item.menu?.price?.toLocaleString('vi-VN') }}₫
             </td>
             <td class="px-6 py-4 text-gray-500">
               {{ new Date(item.time).toLocaleString() }}

@@ -10,12 +10,8 @@
 
         <!-- 🔍 Thanh tìm kiếm -->
         <div class="relative w-72">
-          <input
-            type="text"
-            v-model="searchTerm"
-            placeholder="Tìm kiếm sản phẩm..."
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none"
-          />
+          <input type="text" v-model="searchTerm" placeholder="Tìm kiếm sản phẩm..."
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-400 focus:outline-none" />
           <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-gray-400"></i>
         </div>
       </div>
@@ -34,17 +30,9 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
-            <tr
-              v-for="item in filteredData"
-              :key="item.id"
-              class="hover:bg-gray-50 transition"
-            >
+            <tr v-for="item in filteredData" :key="item.id" class="hover:bg-gray-50 transition">
               <td class="px-6 py-4">
-                <img
-                  :src="item.img"
-                  alt=""
-                  class="w-16 h-16 object-cover rounded-lg border border-gray-200"
-                />
+                <img :src="item.img" alt="" class="w-16 h-16 object-cover rounded-lg border border-gray-200" />
               </td>
               <td class="px-6 py-4 font-semibold text-gray-800">{{ item.name }}</td>
               <td class="px-6 py-4 text-gray-600">{{ item.describe }}</td>
@@ -53,9 +41,7 @@
                 {{ formatDate(item.isTime) }}
               </td>
               <td class="px-6 py-4 text-center">
-                <button
-                  @click="restoreItem(item.id)"
-                  class="px-4 py-2 bg-gradient-to-r from-green-400 to-emerald-500 
+                <button @click="restoreItem(item.id)" class="px-4 py-2 bg-gradient-to-r from-green-400 to-emerald-500 
                          text-white rounded-lg shadow-md hover:shadow-lg 
                          hover:from-green-500 hover:to-emerald-600 transition-all duration-200 active:scale-95">
                   <i class="fa-solid fa-rotate-left mr-2"></i>
@@ -82,10 +68,11 @@ import axios from "axios"
 import { message } from "ant-design-vue"
 import { useRoute } from "vue-router"
 import ToastService from "../../../../components/ToastService.vue"
+import { useToast } from "vue-toastification"
 const data = ref([])
 const searchTerm = ref("")
 const route = useRoute()
-const toast = ref(null)
+const toast = useToast()
 // 🟡 Gọi API lấy danh sách sản phẩm đã xóa
 onMounted(async () => {
   try {
@@ -105,10 +92,15 @@ const filteredData = computed(() => {
 
 // 🔁 Khôi phục sản phẩm
 async function restoreItem(id) {
+  const role = sessionStorage.getItem("canEdit")
+  if (role === 'false') {
+    message.warning("Không có quyền truy cập !!!")
+    return
+  }
   try {
     await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/api/restore/${id}`)
     message.success("Khôi phục sản phẩm thành công 🎉")
-    toast.value.success(`Khôi phục sản phẩm thành công 🎉`) // ✅
+    toast.success(`Khôi phục sản phẩm thành công 🎉`) // ✅
     data.value = data.value.filter(item => item.id !== id)
   } catch (err) {
     console.error(err)

@@ -10,8 +10,12 @@ public class DTOStatus {
     private String billid;
     private boolean is_deleted_status;
     private String so_ban;
+    private Long accountid;
+    private int idproduct;
+    public DTOStatus() {
+    }
     public DTOStatus(Long statusid, Integer money, boolean status1, boolean status2, boolean status3, String name,
-            String billid, boolean is_deleted_status, String so_ban) {
+            String billid, boolean is_deleted_status, String so_ban, Long accountid, int idproduct) {
         this.statusid = statusid;
         this.money = money;
         this.status1 = status1;
@@ -21,6 +25,8 @@ public class DTOStatus {
         this.billid = billid;
         this.is_deleted_status = is_deleted_status;
         this.so_ban = so_ban;
+        this.accountid = accountid;
+        this.idproduct = idproduct;
     }
     public Long getStatusid() {
         return statusid;
@@ -76,6 +82,17 @@ public class DTOStatus {
     public void setSo_ban(String so_ban) {
         this.so_ban = so_ban;
     }
-   
+    public Long getAccountid() {
+        return accountid;
+    }
+    public void setAccountid(Long accountid) {
+        this.accountid = accountid;
+    }
+    public int getIdproduct() {
+        return idproduct;
+    }
+    public void setIdproduct(int idproduct) {
+        this.idproduct = idproduct;
+    }
     
 }

@@ -54,7 +54,6 @@ async function handleSubmit() {
                 password: password.value
             }
         });
-        console.log(response.data)
         if (response.data !== '') {
             loginSuccess();
 
@@ -77,7 +76,7 @@ async function handleSubmit() {
                 router.push("/").then(() => {
                     location.reload();
                 });
-            }, 2000);
+            }, 2500);
         } else {
             loginFail();
         }

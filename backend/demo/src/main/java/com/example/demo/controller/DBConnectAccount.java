@@ -7,7 +7,8 @@ import com.example.demo.Repository.DataRepositoryAccount;
 import com.example.demo.Repository.DataRepositoryAccountStatistic;
 import com.example.demo.Repository.DataRepositoryInfor;
 import com.example.demo.model.DBAccount;
-import com.example.demo.model.DBBill;
+import com.example.demo.model.DBAdmin;
+import com.example.demo.model.DBCart;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,6 +35,8 @@ public class DBConnectAccount {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private DataRepositoryAccountStatistic sta;
+    @Value("${server.name}")
+    private String name;
 
     @GetMapping("/check")
     public List<DBAccount> getMethodName(@RequestParam String account, @RequestParam String password) {
@@ -62,7 +66,7 @@ public class DBConnectAccount {
                 acc.setIs_time(new Date());
                 connect.save(acc);
                 sta.insertData();
-                
+
                 return connect.getIdAccountGoogle(account);
             } else {
                 String decoded = passwordEncoder.encode(password);
@@ -92,6 +96,18 @@ public class DBConnectAccount {
         }
         connect.updatePassword(passwordEncoder.encode(newPassword), LocalDateTime.now(), accountid);
         return "success";
+    }
+
+    @PostMapping("admin/update/{id}")
+    public String postMethodName(@RequestBody Map<String, String> entity, @PathVariable("id") Integer id) {
+        String account = entity.get("account");
+        String email = entity.get("email");
+        if (connect.checkEmail(email) != null) {
+            return "error";
+        }
+        connect.updateAdmin(account, email, id);
+
+        return "";
     }
 
     public String findName(Long id) {

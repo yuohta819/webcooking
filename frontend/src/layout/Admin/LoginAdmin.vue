@@ -12,16 +12,21 @@ const router = useRouter();
 async function handleSubmit(e) {
   e.preventDefault(); // Ngăn reload trang mặc định
   try {
-    const response = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/admin/check`, {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/${import.meta.env.VITE_APP_NAME}/check`, {
       params: {
         name: name.value,
         password: password.value
       }
     });
+    console.log(response.data)
     if (response.data !== "") {
       loginSuccess();
-      localStorage.setItem("admin",response.data[0].account)
-      router.push('/admin')
+      sessionStorage.setItem("accountid", response.data.accountid)
+      sessionStorage.setItem("admin", JSON.stringify(response.data.account))
+      sessionStorage.setItem('canAdd',response.data.canAdd)
+      sessionStorage.setItem('canDelete',response.data.canDelete)
+      sessionStorage.setItem('canEdit',response.data.canEdit)
+      router.push(`/${import.meta.env.VITE_APP_NAME}/dashboard`)
     } else {
       loginFail();
     }
@@ -43,7 +48,7 @@ function loginFail() {
   <div class="bg-[#f0f2f5] h-screen flex items-center justify-center">
     <div class="bg-white rounded-lg shadow-md p-6 w-[350px] text-center">
       <h2 class="text-2xl font-semibold text-[#1677ff] mb-5">Đăng Nhập</h2>
-      
+
       <!-- ✅ Gắn sự kiện @submit vào form -->
       <form id="login-form" @submit="handleSubmit">
         <div class="mb-4 text-left">
@@ -56,15 +61,8 @@ function loginFail() {
               </svg>
             </span>
             <!-- ✅ Gắn v-model để cập nhật giá trị -->
-            <input
-              type="text"
-              id="username"
-              name="username"
-              required
-              placeholder="Tài khoản"
-              class="outline-none w-full"
-              v-model="name"
-            />
+            <input type="text" id="username" name="username" required placeholder="Tài khoản"
+              class="outline-none w-full" v-model="name" />
           </div>
         </div>
 
@@ -78,22 +76,13 @@ function loginFail() {
               </svg>
             </span>
             <!-- ✅ Gắn v-model để cập nhật giá trị -->
-            <input
-              type="password"
-              id="password"
-              name="password"
-              required
-              placeholder="Mật khẩu"
-              class="outline-none w-full"
-              v-model="password"
-            />
+            <input type="password" id="password" name="password" required placeholder="Mật khẩu"
+              class="outline-none w-full" v-model="password" />
           </div>
         </div>
 
-        <button
-          type="submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition duration-200"
-        >
+        <button type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition duration-200">
           Đăng Nhập
         </button>
       </form>
@@ -102,7 +91,7 @@ function loginFail() {
 </template>
 <style scoped>
 input {
-    outline: none !important;
-    border: none !important;
+  outline: none !important;
+  border: none !important;
 }
 </style>

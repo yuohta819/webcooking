@@ -8,6 +8,7 @@ const name = ref("")
 const img = ref("")
 const decribe = ref("")
 const price = ref("")
+
 async function handleSubmit() {
   const res = await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/api/create`, {
     img: img.value,

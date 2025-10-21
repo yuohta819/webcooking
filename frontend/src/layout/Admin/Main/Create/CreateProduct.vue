@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { useToast } from "vue-toastification";
+import { useRouter } from 'vue-router';
 
 const toast = useToast();
 const name = ref("")
@@ -9,7 +10,12 @@ const img = ref("")        // URL trả về từ Cloudinary
 const describe = ref("")
 const price = ref("")
 const isUploading = ref(false)
-
+const roles = sessionStorage.getItem("canAdd")
+const router  = useRouter()
+if (roles === 'false') {
+  toast.warning("Bạn không có quyền truy cập chức năng này !!!")
+ router.push(`/${import.meta.env.VITE_APP_NAME}`)
+}
 // ✅ Upload ảnh khi người dùng chọn file
 async function handleImageUpload(event) {
   const file = event.target.files[0]
