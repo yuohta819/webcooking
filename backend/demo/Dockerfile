@@ -1,10 +1,10 @@
-# Giai đoạn build
-FROM eclipse-temurin:17-jdk AS build
+# Stage 1: Build application
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY . .
-RUN ./mvnw clean package -DskipTests || mvn clean package -DskipTests
+RUN mvn clean package -DskipTests
 
-# Giai đoạn chạy
+# Stage 2: Run application
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
