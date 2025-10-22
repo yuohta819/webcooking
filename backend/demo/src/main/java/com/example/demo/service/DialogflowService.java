@@ -72,6 +72,7 @@ public class DialogflowService {
 
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(e);
             return "Xin lỗi, hệ thống đang bận 😅";
         }
     }
