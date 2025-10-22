@@ -114,9 +114,11 @@ async function sendMessage() {
   userMessage.value = "";
 
   try {
+    console.log(text)
     const res = await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/api/chat`, { message: text });
     messages.value.push({ sender: "bot", text: res.data.reply });
   } catch (err) {
+    console.log(err)
     messages.value.push({
       sender: "bot",
       text: "😥 Xin lỗi, hệ thống đang bận. Vui lòng thử lại sau.",
