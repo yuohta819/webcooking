@@ -1,5 +1,5 @@
 # =========================
-# Giai đoạn 1: Build app bằng Maven
+# 🏗️ Giai đoạn 1: Build app bằng Maven
 # =========================
 FROM maven:3.9.9-eclipse-temurin-17 AS build
 WORKDIR /app
@@ -12,14 +12,13 @@ RUN mvn -f /app/pom.xml clean package -DskipTests
 
 
 # =========================
-# Giai đoạn 2: Chạy ứng dụng
+# 🚀 Giai đoạn 2: Chạy ứng dụng (không dùng Alpine)
 # =========================
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 # Copy file JAR từ stage build sang
 COPY --from=build /app/target/*.jar app.jar
-
 
 # Mở cổng 8080
 EXPOSE 8080
