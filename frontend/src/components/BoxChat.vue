@@ -115,7 +115,7 @@ async function sendMessage() {
 
   try {
     console.log(text)
-    const res = await axios.post(`https://webcooking-backend.onrender.com/api/chat`, { message: text });
+    const res = await axios.post(`https://webcooking-backend.onrender.com/api/chat`, { message: "hello" });
     console.log(res.data)
     messages.value.push({ sender: "bot", text: res.data.reply });
   } catch (err) {
