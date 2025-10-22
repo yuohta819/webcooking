@@ -8,16 +8,20 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.PostConstruct;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 
 @Service
 public class DialogflowService {
 
+    // 📦 Khi deploy Render, ta lưu JSON thẳng vào biến môi trường
     @Value("${dialogflow.credentials.json:}")
-    private String credentialsJson; // Dùng khi deploy (Render)
+    private String credentialsJson;
 
+    // 💻 Khi chạy local, ta dùng file trong ổ D:
     @Value("${dialogflow.key.path:}")
-    private String keyPath; // Dùng khi chạy local
+    private String keyPath;
 
     @Value("${dialogflow.project.id}")
     private String projectId;
@@ -26,14 +30,14 @@ public class DialogflowService {
     public void init() {
         System.out.println("✅ Project ID: " + projectId);
 
-        String envPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
-
-        if (envPath != null && !envPath.isEmpty()) {
-            System.out.println("🌍 Dùng GOOGLE_APPLICATION_CREDENTIALS: " + envPath);
+        if (System.getenv("GOOGLE_APPLICATION_CREDENTIALS") != null) {
+            System.out.println("🌍 Dùng GOOGLE_APPLICATION_CREDENTIALS trong hệ thống (Render/Docker).");
         } else if (credentialsJson != null && !credentialsJson.isEmpty()) {
-            System.out.println("☁️ Dùng credentials từ biến môi trường JSON (Render).");
+            System.out.println("☁️ Dùng credentials JSON từ biến môi trường (Render).");
+        } else if (keyPath != null && !keyPath.isEmpty()) {
+            System.out.println("💻 Dùng file local từ đường dẫn: " + keyPath);
         } else {
-            System.out.println("💻 Dùng file local: " + keyPath);
+            System.out.println("⚠️ Không tìm thấy credentials nào!");
         }
     }
 
@@ -76,25 +80,29 @@ public class DialogflowService {
     // 🔹 Hàm tự động load credentials
     // -------------------------------
     private GoogleCredentials loadCredentials() throws IOException {
-        // 1️⃣ Ưu tiên biến môi trường GOOGLE_APPLICATION_CREDENTIALS (Render/Linux)
+        // 1️⃣ Nếu có GOOGLE_APPLICATION_CREDENTIALS (Docker hoặc Render set sẵn)
         String envPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
         if (envPath != null && !envPath.isEmpty()) {
             System.out.println("🔹 Load credentials từ GOOGLE_APPLICATION_CREDENTIALS: " + envPath);
             return GoogleCredentials.fromStream(new FileInputStream(envPath));
         }
 
-        // 2️⃣ Nếu có credentials JSON trong biến môi trường (Render)
+        // 2️⃣ Nếu có JSON trong biến môi trường (Render)
         if (credentialsJson != null && !credentialsJson.isEmpty()) {
-            System.out.println("🔹 Load credentials từ JSON trong biến môi trường.");
-            return GoogleCredentials.fromStream(new ByteArrayInputStream(credentialsJson.getBytes(StandardCharsets.UTF_8)));
+            System.out.println("🔹 Load credentials từ biến môi trường JSON (Render).");
+            // Ghi tạm JSON ra file để SDK đọc được
+            Path temp = Files.createTempFile("dialogflow-", ".json");
+            Files.write(temp, credentialsJson.getBytes(StandardCharsets.UTF_8));
+            System.setProperty("GOOGLE_APPLICATION_CREDENTIALS", temp.toString());
+            return GoogleCredentials.fromStream(Files.newInputStream(temp));
         }
 
-        // 3️⃣ Mặc định: dùng file cục bộ (Local)
+        // 3️⃣ Nếu đang chạy local, đọc file cục bộ
         if (keyPath != null && !keyPath.isEmpty()) {
             System.out.println("🔹 Load credentials từ file local: " + keyPath);
             return GoogleCredentials.fromStream(new FileInputStream(keyPath));
         }
 
-        throw new IllegalStateException("❌ Không tìm thấy credentials hợp lệ (GOOGLE_APPLICATION_CREDENTIALS, JSON, hoặc file local).");
+        throw new IllegalStateException("❌ Không tìm thấy credentials hợp lệ (Env, JSON hoặc Local File).");
     }
 }

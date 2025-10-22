@@ -21,7 +21,7 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 # ✅ Copy file Google credentials (đặt cùng cấp với pom.xml)
-COPY backend/demo/newagent-9mjr-e07525211246.json /app/newagent-9mjr-e07525211246.json
+COPY demo/newagent-9mjr-e07525211246.json /app/newagent-9mjr-e07525211246.json
 
 # ✅ Thiết lập biến môi trường để Google SDK biết vị trí file
 ENV GOOGLE_APPLICATION_CREDENTIALS="/app/newagent-9mjr-e07525211246.json"
