@@ -7,7 +7,23 @@ const route = useRoute()
 const token = localStorage.getItem("token")
 console.log(route.query.token)
 
-if (token) {
+if (token == 'google') {
+    const userRes = await axios.get(
+        `${import.meta.env.VITE_API_URL_BACKEND}/login/user`,
+        { withCredentials: true }
+    )
+
+    localStorage.setItem("name", userRes.data.name)
+    localStorage.setItem("account", userRes.data.email)
+    localStorage.setItem("type", "google")
+
+    // Xoá token tạm để tránh chạy lại vòng lặp
+    localStorage.removeItem("token")
+
+    // Reload để cập nhật UI
+    location.reload()
+}
+if (token && token != 'google') {
     console.log(token)
     onMounted(async () => {
         try {
