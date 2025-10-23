@@ -163,7 +163,7 @@ function handleToken() {
                         </div>
                     </div>
 
-                    <div class="my-5 relative" @click="handleToken">
+                    <!-- <div class="my-5 relative" @click="handleToken">
                         <div class="py-3 text-center button rounded-[50px] flex items-center justify-around px-39"
                             style="background: white; color: white;">
                             <img class="relative z-3"
@@ -175,7 +175,7 @@ function handleToken() {
                             <div class="box-1"></div>
                             <div class="box-2"></div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="my-10 text-center">
                         <span>Don’t have an account? </span>
