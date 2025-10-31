@@ -9,6 +9,7 @@ const password = ref('');
 const remember = ref(false); // ✅ trạng thái checkbox
 const toast = useToast();
 const router = useRouter();
+const backend = import.meta.env.VITE_API_URL_BACKEND
 let google
 // ✅ Tự động đăng nhập nếu có dữ liệu trong localStorage
 onMounted(() => {
@@ -159,7 +160,7 @@ function handlePassword(pass) {
                             <div class="box-2"></div>
                         </div>
                     </div>
-                    <a :href="`${import.meta.env.VITE_API_URL_BACKEND}/oauth2/authorization/google`">
+                    <a :href="`${backend}/oauth2/authorization/google`">
                         <div class="my-5 relative">
                             <div class="py-3 text-center button rounded-[50px] flex items-center justify-around px-39"
                                 style="background: white; color: white;"> <img class="relative z-3"
