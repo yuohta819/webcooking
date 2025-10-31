@@ -5,7 +5,6 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const token = localStorage.getItem("token")
-console.log(route.query.token)
 
 if (token == 'google') {
     const userRes = await axios.get(

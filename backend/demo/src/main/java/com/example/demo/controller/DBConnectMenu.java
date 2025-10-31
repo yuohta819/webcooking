@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,10 @@ import com.example.demo.model.DBCart;
 import com.example.demo.model.DBMap;
 import com.example.demo.model.DBMenu;
 import com.example.demo.model.DBStatus;
+import com.example.demo.until.JwtUntil;
 
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -47,6 +51,8 @@ public class DBConnectMenu {
     private DataRepositoryInfor infor;
     @Autowired
     private Cloudinary cloudinary;
+    @Autowired
+    private JwtUntil jwtUtil;
 
     @PostMapping("/upload-image")
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
@@ -58,6 +64,25 @@ public class DBConnectMenu {
         } catch (IOException e) {
             return ResponseEntity.status(500).body(Map.of("error", "Upload failed"));
         }
+    }
+
+    public Claims decodedToken(HttpServletRequest request) {
+        try {
+            String authHeader = request.getHeader("authorization");
+            String token = authHeader.substring(7); // bỏ chữ Bearer + khoảng trắng
+            if (!jwtUtil.validateToken(token)) {
+                return null;
+            }
+            Claims claims = jwtUtil.extractAllClaims(token);
+            return claims;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @GetMapping("/check/token")
+    public String getMethodName(@RequestParam String param) {
+        return new String();
     }
 
     @GetMapping("/menu")
@@ -86,22 +111,42 @@ public class DBConnectMenu {
         return "no";
     }
 
-    @GetMapping("/infor/{account}")
-    public List<DBMap> getInfor(@PathVariable String account) {
-        List<DBCart> list = infor.findUsersId(account);
-        Map<DBMenu, Integer> map = new LinkedHashMap<>();
-        for (DBCart x : list) {
-            if (map.containsKey(x.getMenu())) {
-                int cnt = map.get(x.getMenu());
-                cnt = cnt + 1;
-                map.put(x.getMenu(), cnt);
-            } else {
-                map.put(x.getMenu(), 1);
+    @GetMapping("/infor")
+    public Map<String, Object> getInfor(HttpServletRequest request) {
+        try {
+            Claims decoded = decodedToken(request);
+            if (decoded == null) {
+                return null;
             }
+            Integer accountid = decoded.get("accountid", Integer.class);
+            String account = decoded.get("account", String.class);
+            String name = decoded.get("name", String.class);
+            // // 🔹 Trả về token + thông tin tài khoản
+            Map<String, Object> response = new HashMap<>();
+            response.put("accountid", accountid);
+            response.put("account", account);
+            response.put("name", name);
+            String id = decoded.get("account", String.class);
+            List<DBCart> list = infor.findUsersId(id);
+            Map<DBMenu, Integer> map = new LinkedHashMap<>();
+            for (DBCart x : list) {
+                if (map.containsKey(x.getMenu())) {
+                    int cnt = map.get(x.getMenu());
+                    cnt = cnt + 1;
+                    map.put(x.getMenu(), cnt);
+                } else {
+                    map.put(x.getMenu(), 1);
+                }
 
+            }
+            List<DBMap> result = map.entrySet().stream().map(entry -> new DBMap(entry.getKey(), entry.getValue()))
+                    .toList();
+            response.put("cart", result);
+
+            return response;
+        } catch (Exception e) {
+            return null;
         }
-        List<DBMap> result = map.entrySet().stream().map(entry -> new DBMap(entry.getKey(), entry.getValue())).toList();
-        return result;
     }
 
     @PostMapping("/create")
@@ -148,10 +193,12 @@ public class DBConnectMenu {
         menu.updateDelete(id);
         return "";
     }
+
     @GetMapping("/suggest")
-    public List<DBMenu> getMethodNamee(@RequestParam String id) {
-        return menu.findSuggest(Integer.parseInt(id));
+    public List<DBMenu> getMethodNamee(HttpServletRequest request) {
+        Claims decoded = decodedToken(request);
+        Integer id = decoded.get("accountid", Integer.class);
+        return menu.findSuggest(id);
     }
-    
 
 }

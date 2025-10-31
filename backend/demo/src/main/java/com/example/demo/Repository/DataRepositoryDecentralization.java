@@ -17,6 +17,9 @@ public interface DataRepositoryDecentralization extends JpaRepository<DBDecentra
                   "FROM Permissions p JOIN Admin a ON a.accountid = p.accountid", nativeQuery = true)
       List<DTODecentralization> getAllDecentralizations();
 
+      @Query("SELECT d FROM DBDecentralization d WHERE d.accountid = :id")
+      DBDecentralization getRoles(@Param("id") Integer id);
+
       // Cập nhật quyền "Thêm"
       @Transactional
       @Modifying
@@ -46,7 +49,5 @@ public interface DataRepositoryDecentralization extends JpaRepository<DBDecentra
                   "WHERE a.accountid = :id", nativeQuery = true)
       void updateCanDelete(@Param("statusType") boolean statusType,
                   @Param("id") int id);
-
-      
 
 }

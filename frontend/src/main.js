@@ -26,31 +26,52 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  let admin = null;
+import axios from 'axios'
 
-  try {
-    const adminData = localStorage.getItem('admin') || sessionStorage.getItem('admin');
-    admin = adminData ? JSON.parse(adminData) : null;
-  } catch (e) {
-    console.warn('⚠️ Lỗi JSON.parse admin:', e);
-    // Xóa dữ liệu sai để tránh lặp lại lỗi
-    localStorage.removeItem('admin');
-    sessionStorage.removeItem('admin');
-  }
-
-  // Kiểm tra route
+router.beforeEach(async (to, from, next) => {
+  let token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken')
+  let account = localStorage.getItem('admin') || sessionStorage.getItem('admin')
+  // Nếu đang vào route admin
   if (to.path.startsWith('/admin')) {
-    if (!admin && to.path !== '/admin/login') {
-      return next({ path: '/admin/login' });
+    // Không có token → quay lại login
+    if (!token && to.path !== '/admin/login') {
+      return next({ path: '/admin/login' })
     }
-    if (admin && to.path === '/admin/login') {
-      return next({ path: '/admin/dashboard' });
+
+    // Có token → kiểm tra với backend
+    if (token) {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/${import.meta.env.VITE_APP_NAME}/token`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {account}
+        })
+
+        // Token hợp lệ
+        if (res.data === 'valid') {
+          if (to.path === '/admin/login') {
+            return next({ path: '/admin/dashboard' })
+          }
+          return next()
+        } else {
+          // Token không hợp lệ → xóa token
+          // localStorage.removeItem('adminToken')
+          // sessionStorage.removeItem('adminToken')
+          return next({ path: '/admin/login' })
+        }
+      } catch (err) {
+        console.error('❌ Lỗi xác minh token:', err)
+        localStorage.removeItem('adminToken')
+        sessionStorage.removeItem('adminToken')
+        return next({ path: '/admin/login' })
+      }
     }
   }
 
-  next();
-});
+  // Route thường thì bỏ qua
+  next()
+})
 
 
 

@@ -14,4 +14,6 @@ public interface UserSessionRepository extends JpaRepository<DBUserSession, Inte
     Optional<DBUserSession> findByAccountid(Long accountid);
     @Query("SELECT d.accountid FROM DBAccount d WHERE d.username = :email")
     Integer getIdAccount(@Param("email") String email);
+    @Query("SELECT d FROM DBUserSession d WHERE d.token = :token")
+    DBUserSession checkToken(@Param("token") String token);
 }

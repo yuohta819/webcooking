@@ -52,6 +52,7 @@
 import { onMounted, ref } from 'vue'
 import axios from "axios"
 import { useToast } from 'vue-toastification'
+import { useRouter } from 'vue-router'
 
 const totalSpent = ref(0)
 const username = ref("")
@@ -59,7 +60,7 @@ const oldPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
 const data = ref([])
-
+const router = useRouter()
 const toast = useToast()
 let account = localStorage.getItem("accountid")
 if (account == null) {
@@ -67,13 +68,33 @@ if (account == null) {
 }
 
 onMounted(async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/cart/total`, {
-        params: { param: account }
-    })
+  try {
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token")
+
+    if (!token) {
+      router.push("/account/login")
+      return
+    }
+
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_URL_BACKEND}/cart/total`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+
     data.value = res.data
     username.value = data.value[1]
     totalSpent.value = data.value[0]
+
+  } catch (err) {
+    console.error("❌ Lỗi khi lấy tổng tiền giỏ hàng:", err)
+    router.push("/account/login")
+  }
 })
+
 
 async function changePassword() {
     // --- VALIDATION ---

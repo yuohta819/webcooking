@@ -36,39 +36,41 @@ onMounted(() => {
 
 async function handleSubmit() {
     // ✅ Kiểm tra định dạng email
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(account.value)) {
-        toast.error("Please enter a valid email address!");
-        return;
-    }
+    // const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailPattern.test(account.value)) {
+    //     toast.error("Please enter a valid email address!");
+    //     return;
+    // }
 
-    if (password.value.trim() === '') {
-        toast.error("Password cannot be empty!");
-        return;
-    }
+    // if (password.value.trim() === '') {
+    //     toast.error("Password cannot be empty!");
+    //     return;
+    // }
 
     try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/account/check`, {
             params: {
-                account: account.value,
-                password: password.value
+                // account: account.value,
+                // password: password.value
+                account: "loctramcam12@gmail.com",
+                password: "12345"
             }
         });
+        console.log(response.data)
         if (response.data !== '') {
             loginSuccess();
 
             // ✅ Nếu người dùng chọn “Remember for 30 days”
             if (remember.value) {
                 const expireTime = new Date().getTime() + 30 * 24 * 60 * 60 * 1000; // 30 ngày
-                localStorage.setItem("name", response.data[0].name);
-                localStorage.setItem("account", response.data[0].username);
-                localStorage.setItem("expireTime", expireTime.toString());
-                localStorage.setItem("accountid", response.data[0].accountid)
+                localStorage.setItem("name", response.data.name);
+                localStorage.setItem("account", response.data.account);
+                localStorage.setItem("token", response.data.token);
             } else {
                 // ✅ Lưu tạm trong sessionStorage (mất khi đóng trình duyệt)
-                sessionStorage.setItem("name", response.data[0].name);
-                sessionStorage.setItem("account", response.data[0].username);
-                sessionStorage.setItem("accountid", response.data[0].accountid);
+                sessionStorage.setItem("name", response.data.name);
+                sessionStorage.setItem("account", response.data.account);
+                sessionStorage.setItem("token", response.data.token);
 
             }
 
@@ -103,7 +105,6 @@ function handlePassword(pass) {
 }
 
 function handleToken() {
-    localStorage.setItem("token", "google");
     window.location.href = `${import.meta.env.VITE_API_URL_BACKEND}/oauth2/authorization/google`;
 }
 </script>
@@ -163,7 +164,7 @@ function handleToken() {
                         </div>
                     </div>
 
-                    <!-- <div class="my-5 relative" @click="handleToken">
+                    <div class="my-5 relative" @click="handleToken">
                         <div class="py-3 text-center button rounded-[50px] flex items-center justify-around px-39"
                             style="background: white; color: white;">
                             <img class="relative z-3"
@@ -175,7 +176,7 @@ function handleToken() {
                             <div class="box-1"></div>
                             <div class="box-2"></div>
                         </div>
-                    </div> -->
+                    </div>
 
                     <div class="my-10 text-center">
                         <span>Don’t have an account? </span>

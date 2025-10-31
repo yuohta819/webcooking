@@ -14,18 +14,18 @@ async function handleSubmit(e) {
   try {
     const response = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/${import.meta.env.VITE_APP_NAME}/check`, {
       params: {
-        name: name.value,
-        password: password.value
+        // name: name.value,
+        // password: password.value
+        name: "admin1@gmail.com",
+        password: "12345"
       }
     });
     console.log(response.data)
     if (response.data !== "") {
       loginSuccess();
       sessionStorage.setItem("accountid", response.data.accountid)
-      sessionStorage.setItem("admin", JSON.stringify(response.data.account))
-      sessionStorage.setItem('canAdd',response.data.canAdd)
-      sessionStorage.setItem('canDelete',response.data.canDelete)
-      sessionStorage.setItem('canEdit',response.data.canEdit)
+      sessionStorage.setItem("admin", response.data.account)
+      sessionStorage.setItem("adminToken",response.data.token)
       router.push(`/${import.meta.env.VITE_APP_NAME}/dashboard`)
     } else {
       loginFail();
@@ -37,7 +37,7 @@ async function handleSubmit(e) {
 }
 
 function loginSuccess() {
-  toast.success("Account created successfully!");
+  toast.success("Login successful!!!!!");
 }
 function loginFail() {
   toast.error("Wrong account and password");

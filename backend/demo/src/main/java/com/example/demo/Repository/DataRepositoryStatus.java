@@ -56,6 +56,10 @@ public interface DataRepositoryStatus extends JpaRepository<DBStatus, Long> {
     @Query("SELECT SUM(d.money) FROM DBStatus d WHERE d.accountid = :id AND d.is_deleted_status = False")
     Integer getTotal(@Param("id") int id);
     @Query("SELECT d.table_name FROM DBNumber d WHERE d.accountid = :id")
-    String getNameTable(@Param("id") Integer id);
+    String getNameTable(@Param("id") Long id);
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM DBCart WHERE idproduct = :id")
+    void deleteCart(@Param("id") Long id);
    
 }

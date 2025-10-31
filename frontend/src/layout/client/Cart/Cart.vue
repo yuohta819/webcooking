@@ -9,18 +9,29 @@ import { useToast } from "vue-toastification";
 
 const data = ref([])
 const toast = useToast();
-const route = useRouter()
-const routee = useRoute();
-let name = localStorage.getItem("account")
-let accountid = localStorage.getItem("accountid")
-if (accountid == null) {
-    name = sessionStorage.getItem("account")
-    accountid = sessionStorage.getItem("accountid")
-}
+let token = localStorage.getItem("token") || sessionStorage.getItem("token")
+const router = useRouter()
+
 onMounted(async () => {
-    if (name) {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/api/infor/${name}`)
-        data.value = res.data
+    try {
+        const res = await axios.get(
+            `${import.meta.env.VITE_API_URL_BACKEND}/api/infor`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        )
+        if (res.data === '') {
+            toast.error("Token expired or invalid!!!")
+            localStorage.clear()
+            sessionStorage.clear()
+            router.push("/")
+           
+        }
+        data.value = res.data.cart
+    } catch (err) {
+        console.error("Lỗi khi tải giỏ hàng:", err)
     }
 
 })

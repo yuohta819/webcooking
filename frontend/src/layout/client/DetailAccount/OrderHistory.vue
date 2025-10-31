@@ -5,18 +5,12 @@
       <p class="text-sm text-slate-500 mb-6">View your recent completed orders and details</p>
 
       <div v-if="paginatedOrders.length > 0" class="space-y-4">
-        <div
-          v-for="(order, index) in paginatedOrders"
-          :key="index"
-          class="bg-white rounded-xl shadow-md border border-slate-200 hover:shadow-lg transition p-5"
-        >
+        <div v-for="(order, index) in paginatedOrders" :key="index"
+          class="bg-white rounded-xl shadow-md border border-slate-200 hover:shadow-lg transition p-5">
           <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-              <img
-                :src="order.img"
-                alt="Order image"
-                class="w-16 h-16 rounded-lg object-cover border border-slate-200"
-              />
+              <img :src="order.img" alt="Order image"
+                class="w-16 h-16 rounded-lg object-cover border border-slate-200" />
               <div>
                 <h2 class="text-slate-900 font-semibold text-lg">{{ order.name }}</h2>
                 <p class="text-sm text-slate-500">
@@ -29,14 +23,9 @@
               <div class="text-slate-900 font-semibold text-lg">
                 {{ formatCurrency(order.price) }}
               </div>
-              <div
-                class="inline-flex items-center gap-2 px-3 py-1 mt-1 rounded-full text-sm font-medium"
-                :class="order.status3 ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose-700'"
-              >
-                <span
-                  class="w-2 h-2 rounded-full"
-                  :class="order.status3 ? 'bg-green-500' : 'bg-rose-500'"
-                ></span>
+              <div class="inline-flex items-center gap-2 px-3 py-1 mt-1 rounded-full text-sm font-medium"
+                :class="order.status3 ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose-700'">
+                <span class="w-2 h-2 rounded-full" :class="order.status3 ? 'bg-green-500' : 'bg-rose-500'"></span>
                 <span>{{ order.status3 ? 'Delivered' : 'Processing' }}</span>
               </div>
             </div>
@@ -45,21 +34,15 @@
 
         <!-- Pagination -->
         <div v-if="totalPages > 1" class="flex justify-center items-center gap-3 mt-8">
-          <button
-            @click="prevPage"
-            :disabled="currentPage === 1"
-            class="px-3 py-1 rounded-md bg-slate-200 text-slate-700 hover:bg-slate-300 disabled:opacity-50"
-          >
+          <button @click="prevPage" :disabled="currentPage === 1"
+            class="px-3 py-1 rounded-md bg-slate-200 text-slate-700 hover:bg-slate-300 disabled:opacity-50">
             Prev
           </button>
           <span class="text-slate-700 text-sm">
             Page {{ currentPage }} of {{ totalPages }}
           </span>
-          <button
-            @click="nextPage"
-            :disabled="currentPage === totalPages"
-            class="px-3 py-1 rounded-md bg-slate-200 text-slate-700 hover:bg-slate-300 disabled:opacity-50"
-          >
+          <button @click="nextPage" :disabled="currentPage === totalPages"
+            class="px-3 py-1 rounded-md bg-slate-200 text-slate-700 hover:bg-slate-300 disabled:opacity-50">
             Next
           </button>
         </div>
@@ -73,24 +56,38 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
 const data = ref([])
 const currentPage = ref(1)
 const itemsPerPage = 4
 
-let account = localStorage.getItem('accountid')
-if (!account) account = sessionStorage.getItem('accountid')
-
+const router = useRouter()
 onMounted(async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/cart/history`, {
-      params: { param: account }
-    })
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token")
+
+    if (!token) {
+      router.push("/account/login")
+      return
+    }
+
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_URL_BACKEND}/cart/history`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+
     data.value = res.data
+    console.log("🛒 Lịch sử đơn hàng:", data.value)
   } catch (err) {
-    console.error('Failed to fetch orders:', err)
+    console.error("❌ Lỗi khi tải lịch sử đơn hàng:", err)
   }
 })
+
 
 const totalPages = computed(() => Math.ceil(data.value.length / itemsPerPage))
 

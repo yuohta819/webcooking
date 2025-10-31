@@ -39,18 +39,30 @@ const confirmPassword = ref("")
 const loading = ref(false)
 const token = route.query.token
 console.log(token)
-onMounted( async () => {
-  const checkRes = await axios.get(
-    `${import.meta.env.VITE_API_URL_BACKEND}/auth/check-token`, {
-      params: {
-        param: token
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token") // hoặc sessionStorage nếu bạn lưu ở đó
+    if (token) {
+      const checkRes = await axios.get(
+        `${import.meta.env.VITE_API_URL_BACKEND}/auth/check-token`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      if (!checkRes.data || checkRes.data === "") {
+        // router.push("/account/login")
       }
+
     }
-  )
-  if (checkRes.data === '') {
+
+  } catch (err) {
+    console.error("❌ Token check failed:", err)
     router.push("/account/login")
   }
 })
+
 async function resetPassword() {
 
 

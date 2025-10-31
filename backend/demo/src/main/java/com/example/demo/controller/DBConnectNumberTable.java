@@ -47,7 +47,6 @@ public class DBConnectNumberTable {
         Integer people = Integer.parseInt(entity.get("people").toString());
         String payment = (String) entity.get("payment");
         Double total = Double.parseDouble(entity.get("total").toString());
-
         // ✅ Ép kiểu danh sách sản phẩm
         List<Map<String, Object>> products = (List<Map<String, Object>>) entity.get("products");
 

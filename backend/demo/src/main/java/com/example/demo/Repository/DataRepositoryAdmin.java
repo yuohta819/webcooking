@@ -12,11 +12,11 @@ import com.example.demo.model.DBDecentralization;
 import com.example.demo.model.DBStatus;
 
 public interface DataRepositoryAdmin extends JpaRepository<DBAdmin, Long> {
-  @Query(value = "SELECT a.id FROM DBAdmin a WHERE a.email = :account")
-  Integer getIdAdmin(@Param("account") String account);
+  @Query(value = "SELECT a FROM DBAdmin a WHERE a.email = :account")
+  DBAdmin getIdAdmin(@Param("account") String account);
 
   @Query(value = "SELECT a.accountid FROM DBDecentralization a WHERE a.accountid = :id")
-  Integer getIdAdminn(@Param("id") Integer id);
+  Integer getIdAdminn(@Param("id")Long id);
 
   @Query(value = "SELECT a FROM DBAdmin a WHERE a.accountid = :account")
   DBAdmin getCallAdmin(@Param("account") Long account);

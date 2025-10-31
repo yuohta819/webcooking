@@ -2,11 +2,13 @@
 import axios from "axios"
 import { onMounted, ref, nextTick } from "vue";
 import { Swiper, SwiperSlide } from 'swiper/vue'
+import { useRouter } from "vue-router"
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import { Autoplay, Navigation, Pagination } from 'swiper/modules'
 const data = ref([])
+const router = useRouter()
 onMounted(async () => {
     const response = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/api/menu`)
     data.value = response.data.slice(0, 4)
@@ -25,7 +27,9 @@ const name = [
     'TODAY SPACIAL FOOD',
     'SPECIAL CHICKEN ROLL'
 ]
-
+function detail(id) {
+    router.push(`/detail/${id}`)
+}
 </script>
 
 <template>
@@ -41,8 +45,10 @@ const name = [
         <div class="w-full max-w-[1300px] mx-auto px-40 py-12">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 <div v-for="item in data" :key="item._id"
-                    class="bg-white rounded-[10px] shadow-md flex flex-col items-center p-4 mt-20 lg:mt-0">
-                    <div class="relative -mt-20 w-32 h-32" >
+                    class="bg-white rounded-[10px] shadow-md flex flex-col items-center p-4 mt-20 lg:mt-0"
+                    @click="detail(item.id)">
+
+                    <div class="relative -mt-20 w-32 h-32">
                         <div class="w-full h-full img rounded-[50%] absolute p-2 ">
                         </div>
                         <img :src="item.img" alt="" class="w-full h-full object-cover rounded-full p-2 z-10" />
@@ -77,7 +83,11 @@ const name = [
                         <div class="box-1"></div>
                         <div class="box-2"></div>
                         <div class="relative z-10">
-                            <button>ORDER NOW</button>
+                            <button>
+                            <a href="/menu">
+                                ORDER NOW
+                            </a>
+                            </button>
                         </div>
                         <i class="fa-solid fa-arrow-right z-10"></i>
                     </div>

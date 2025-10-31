@@ -2,29 +2,47 @@
 import axios from "axios";
 import { ref, computed, onMounted } from "vue";
 import { useToast } from "vue-toastification";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const toast = useToast();
 const router = useRouter();
+const route = useRoute()
+let token = localStorage.getItem("token") || sessionStorage.getItem("token")
 
-let account = localStorage.getItem("account");
-let accountid = localStorage.getItem("accountid");
-let name = localStorage.getItem("name")
-if (!accountid) {
-  account = sessionStorage.getItem("account");
-  accountid = sessionStorage.getItem("accountid");
-  name = sessionStorage.getItem("name")
-}
 
 const cart = ref([]);
 const paymentMethod = ref("zalopay");
 const fullname = ref("");
 const phone = ref("");
 const people = ref(1);
-
+const accountid = ref(0)
+const account = ref('')
+const mail = ref('')
 onMounted(async () => {
-  const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/api/infor/${account}`);
-  cart.value = res.data;
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_URL_BACKEND}/api/infor`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    if (res.data === '') {
+      toast.error("Token expired or invalid!!!")
+
+      localStorage.clear()
+      sessionStorage.clear()
+      router.push("/")
+
+    }
+    cart.value = res.data.cart
+    account.value = res.data.name
+    accountid.value = res.data.accountid
+    mail.value = res.data.account
+  } catch (err) {
+    console.error("Lỗi khi tải giỏ hàng:", err)
+  }
 });
 
 const grandTotal = computed(() => {
@@ -37,12 +55,8 @@ const productIds = computed(() => cart.value.map(item => item.menu.id));
 const productMoney = computed(() => cart.value.map(item => item.menu.price * item.total));
 
 async function handlePayment() {
-  if (!name) {
-    toast.warning("Please login to your account first!");
-    return;
-  }
 
-  if (!fullname.value || !phone.value || !people.value) {
+  if (!phone.value || !people.value) {
     toast.warning("Please fill in all receiver information!");
     return;
   }
@@ -58,9 +72,9 @@ async function handlePayment() {
 
     // ✅ Gọi API thanh toán
     const res = await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}${apiUrl}`, {
-      account: account,
-      accountid: accountid,
-      fullname: fullname.value,
+      account: mail.value,
+      accountid: accountid.value,
+      fullname: account.value,
       phone: phone.value,
       people: people.value,
       payment: paymentMethod.value,
@@ -85,28 +99,22 @@ async function handlePayment() {
 
     if (res.data === 'OK') {
       await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/status/save`, {
-        account: account,
-        accountid: accountid,
+        account: mail.value,
+        accountid: accountid.value,
         status: productIds.value,
         money: productMoney.value,
         people: people.value,
-        name: name,
+        name: account.value,
       });
 
       setTimeout(() => {
         router.push("/").then(() => window.location.reload());
       }, 2000);
     } else {
-      toast.update(toastId, {
-        render: "Payment failed! Please try again.",
-        type: "error",
-        isLoading: false,
-        autoClose: 3000,
-      });
+      toast.update("Payment failed! Please try again.");
     }
 
   } catch (err) {
-    console.error(err);
     toast.error("Payment failed!");
   }
 
@@ -154,7 +162,7 @@ async function handlePayment() {
         <div class="space-y-4 mb-6">
           <div>
             <label class="block text-gray-600 mb-1 font-medium">Full Name</label>
-            <input v-model="fullname" type="text" placeholder="Receiver name"
+            <input  :value="`${account}`" readonly type="text" placeholder="Receiver name"
               class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
           </div>
           <div>

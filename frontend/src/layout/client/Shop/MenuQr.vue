@@ -95,7 +95,7 @@ function formatPrice(v) {
 
 // Detail page URL
 function itemUrl(item) {
-  return `${window.location.origin}/menu/${encodeURIComponent(item.id)}`
+  return `https://webcooking.onrender.com/detail/${encodeURIComponent(item.id)}`
 }
 
 // Generate QR code for each dish

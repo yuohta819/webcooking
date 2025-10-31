@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Repository.DataRepositoryFeelBack;
 import com.example.demo.model.DBFeedback;
+import com.example.demo.until.JwtUntil;
+
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class DBConnectFeelBack {
     @Autowired
     private DataRepositoryFeelBack feelBack;
+    @Autowired
+    private JwtUntil jwtUntil;
 
     @PostMapping("/save")
     public String postMethodName(@RequestBody Map<String, String> entity) {
@@ -30,7 +36,7 @@ public class DBConnectFeelBack {
         Integer accountid = Integer.parseInt(entity.get("accountid"));
         String subject = (String) entity.get("subject");
         String message = (String) entity.get("message");
-        DBFeedback dFellback = new DBFeedback(name, email, subject, message, accountid,null);
+        DBFeedback dFellback = new DBFeedback(name, email, subject, message, accountid, null);
         feelBack.save(dFellback);
 
         return "";
@@ -43,19 +49,37 @@ public class DBConnectFeelBack {
 
     @PostMapping("/delete/{id}")
     public String deleteFeedback(@PathVariable("id") Integer id) {
-        feelBack.getUpdate(id);;
+        feelBack.getUpdate(id);
+        ;
         return "";
     }
+
     @PostMapping("/update")
-    public String postMethodNamee(@RequestBody Map<String,String> entity) {
+    public String postMethodNamee(@RequestBody Map<String, String> entity) {
         feelBack.getUpdateNote((String) entity.get("adminNote"), Integer.parseInt(entity.get("id")));
-        
+
         return "";
     }
-    @GetMapping("/client/{id}")
-    public List<DBFeedback> getMethodName(@PathVariable("id") Integer id) {
+
+    @GetMapping("/client")
+    public List<DBFeedback> getMethodName(HttpServletRequest request) {
+        Claims decoded = decodedToken(request);
+        Integer id = decoded.get("accountid", Integer.class);
         return feelBack.getFeed(id);
     }
-    
+
+    public Claims decodedToken(HttpServletRequest request) {
+        try {
+            String authHeader = request.getHeader("authorization");
+            String token = authHeader.substring(7); // bỏ chữ Bearer + khoảng trắng
+            if (!jwtUntil.validateToken(token)) {
+                return null;
+            }
+            Claims claims = jwtUntil.extractAllClaims(token);
+            return claims;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
 }

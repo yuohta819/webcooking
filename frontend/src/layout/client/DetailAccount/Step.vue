@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
 const data = ref<any[]>([])
-const account = localStorage.getItem("account")
-let accountid = localStorage.getItem("accountid")
-if (accountid == null) {
-  accountid = sessionStorage.getItem("accountid")
-}
+const router = useRouter()
 
 const currentPage = ref(1)
 const itemsPerPage = 6
@@ -21,15 +18,30 @@ const totalPages = computed(() => Math.ceil(data.value.length / itemsPerPage))
 
 onMounted(async () => {
   try {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/status/client/callstatus`, {
-      params: { accountid }
-    })
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token")
+    if (!token) {
+      router.push("/account/login")
+      return
+    }
+
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_URL_BACKEND}/status/client/callstatus`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+
     data.value = res.data
     console.log(data.value)
+
   } catch (error) {
-    console.error("Lỗi khi lấy dữ liệu:", error)
+    console.error("❌ Lỗi khi lấy dữ liệu:", error)
+    router.push("/account/login")
   }
 })
+
 
 function getStepDescription(value: boolean, name: string): string {
   if (value && name === "1") return 'Confirmed'

@@ -49,14 +49,15 @@ import axios from "axios";
 const foods = ref([]);
 
 onMounted(async () => {
-    let accountid = sessionStorage.getItem("accountid") || localStorage.getItem("accountid");
+    let token = sessionStorage.getItem("token") || localStorage.getItem("token");
 
     try {
         const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/api/suggest`, {
-            params: {
-                id: accountid
+            headers: {
+                Authorization: `Bearer ${token}`
             }
         });
+
         foods.value = res.data;
 
         console.log("📦 Data loaded:", foods.value);

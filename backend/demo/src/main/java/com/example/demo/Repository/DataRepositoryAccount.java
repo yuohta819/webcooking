@@ -18,7 +18,7 @@ public interface DataRepositoryAccount extends JpaRepository<DBAccount, Long> {
     List<DBAccount> findAllInfor(@Param("id") Long id);
 
     @Query("SELECT a FROM DBAccount a WHERE a.username = :username")
-    List<DBAccount> findId(@Param("username") String username);
+    DBAccount findId(@Param("username") String username);
 
     @Query("SELECT a.name FROM DBAccount a WHERE a.accountid = :id")
     String getName(@Param("id") int id);
@@ -54,4 +54,9 @@ public interface DataRepositoryAccount extends JpaRepository<DBAccount, Long> {
 
     @Query("SELECT d.accountid FROM DBAdmin d WHERE d.email=:email")
     Integer checkEmail(@Param("email") String email);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM DBUserSession WHERE token = :token")
+    void deleteToken(@Param("token") String token);
 }

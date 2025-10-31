@@ -8,16 +8,61 @@ import 'animate.css';
 import { computed } from 'vue'
 import { emitter } from "../../../components/eventBus"; // 👈 import trực tiếp
 
-let name1 = localStorage.getItem("account")
-if (name1 == null) {
-    name1 = sessionStorage.getItem("account")
-}
+let token = localStorage.getItem("token") || sessionStorage.getItem("token")
+
 const toast = useToast();
 const data = ref([])
+
+const API_URL = import.meta.env.VITE_API_URL_BACKEND;
+const checkcart = ref(null)
+const name = ref('')
+const check = ref(false)
+const showPanel = ref(false)
+const showCart = ref(false)
+const activeDropdown = ref('')
+let type1 = localStorage.getItem("name") || sessionStorage.getItem("name")
+let account = localStorage.getItem("account") || sessionStorage.getItem("account")
+let type = localStorage.getItem("type") || sessionStorage.getItem("type")
+// ✅ Hàm kiểm tra token
+onMounted(async () => {
+    if (token) {
+        try {
+            let account = localStorage.getItem("account") || sessionStorage.getItem("account")
+            // Gọi API check token
+            const res = await axios.get(`${API_URL}/check/token`, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // ✅ Gửi token lên backend
+                },
+                params: { account }, // ✅ Gửi dưới dạng query param
+            });
+
+            // ✅ Nếu backend trả về 200 => token hợp lệ
+            return { valid: true, data: res.data };
+
+        } catch (err) {
+            toast.warning("Token expired or invalid!!!")
+            localStorage.clear()
+            sessionStorage.clear()
+        }
+    }
+})
 async function loadCart() {
     try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/api/infor/${name1}`)
-        data.value = res.data
+        const res = await axios.get(
+            `${import.meta.env.VITE_API_URL_BACKEND}/api/infor`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        )
+        if (res.data === '') {
+            // toast.error("Token expired or invalid!!!")
+            localStorage.clear()
+            sessionStorage.clear()
+
+        }
+        data.value = res.data.cart
     } catch (err) {
         console.error("Lỗi khi tải giỏ hàng:", err)
     }
@@ -34,19 +79,12 @@ onUnmounted(() => {
 onMounted(loadCart)
 
 const grandTotal = computed(() => {
+    loadCart()
     return data.value.reduce((sum, item) => {
         return sum + Math.floor(item.menu.price) * item.total
     }, 0)
 })
-const checkcart = ref(null)
-const name = ref('')
-const check = ref(false)
-const showPanel = ref(false)
-const showCart = ref(false)
-const activeDropdown = ref('')
-let type1 = localStorage.getItem("name")
-let account = localStorage.getItem("account")
-let type = localStorage.getItem("type")
+
 if (type1) {
     name.value = type1;
     if (account && type === "google") {
@@ -67,15 +105,9 @@ if (type1) {
         })
     }
 }
-
-if (account == null) {
-    type1 = sessionStorage.getItem("name")
-    account = sessionStorage.getItem("account")
-    type = sessionStorage.getItem("type")
-}
 const goToCart = () => {
 
-    if (account) {
+    if (token) {
         // ✅ Đã đăng nhập
         router.push("/cart");
     } else {
@@ -129,11 +161,26 @@ const images = [
     'https://www.ex-coders.com/php-template/fresheat/assets/img/header/05.jpg',
     'https://www.ex-coders.com/php-template/fresheat/assets/img/header/06.jpg'
 ]
-function handleLogout() {
-    localStorage.clear();
-    sessionStorage.clear();
-    location.reload();
+async function handleLogout() {
+    try {
+        await axios.get(
+            `${import.meta.env.VITE_API_URL_BACKEND}/account/delete/token`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+    } catch (err) {
+        console.warn("Lỗi khi logout:", err);
+    } finally {
+        // Xóa dữ liệu cục bộ
+        localStorage.clear();
+        sessionStorage.clear();
+        location.reload();
+    }
 }
+
 function handleDropdown(type, isEnter) {
     activeDropdown.value = isEnter ? type : ''
 }

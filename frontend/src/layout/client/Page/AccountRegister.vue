@@ -45,10 +45,14 @@ async function handleSubmit() {
     try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/account/save`, {
             params: {
-                account: account.value,
-                password: password.value,
-                name: name.value,
-                phone: phone.value
+                // account: account.value,
+                // password: password.value,
+                // name: name.value,
+                // phone: phone.value
+                account: "thunhan12@gmail.com",
+                password: "123456",
+                name: "yuohta",
+                phone: "123456"
             }
         });
 
