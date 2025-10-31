@@ -32,28 +32,31 @@ function handleMouseMoveOut() {
             <div v-for="item in data" @mouseenter="handleMouseMove(item.id)" @mouseleave="handleMouseMoveOut"
                 style="background-color: white;" class="mt-5"
                 :class="['rounded-[10px]', 'w-67', 'relative', 'move', isClass == item.id ? 'type-1' : '']">
-                <div class="pt-5 pr-3 text-end">
-                    <i style="background-color: #F43C22; color: white;"
-                        class="fa-regular fa-heart p-2 rounded-[50%]"></i>
-                </div>
-                <div class="place-items-center ">
-                    <img :src=item.img alt="" width="160" class="p-2">
-                </div>
-                <div class="absolute z-5 icon" style="color:red;">
-                    <div class=" rounded-[50%]" style="background-color: white; color: black;"><i
-                            class="text-[16] p-2 fa-solid fa-basket-shopping"></i>
+                <a :href="`/detail/${item.id}`">
+                    <div class="pt-5 pr-3 text-end">
+                        <i style="background-color: #F43C22; color: white;"
+                            class="fa-regular fa-heart p-2 rounded-[50%]"></i>
                     </div>
-                    <div class=" rounded-[50%] mt-2" style="background-color: white; color: black;"><i
-                            class="p-2 fa-solid fa-eye"></i></div>
-                </div>
-                <div class="text-center px-5">
-                    <div class="font-bold item-dis text-[20px] pt-3 " :class="isClass == item.id ? 'type-2' : ''">{{
-                        item.name }}</div>
-                    <div class="my-2 text-[14px]" :class="isClass == item.id ? 'type-2' : ''" style="color: #7D8490;">
-                        {{ item.describe }}</div>
-                    <div class="font-bold pb-5 text-[22px]" :class="isClass == item.id ? 'type-2' : ''"
-                        style="color: #F43C22;">${{ item.price }}</div>
-                </div>
+                    <div class="place-items-center ">
+                        <img :src=item.img alt="" width="160" class="p-2">
+                    </div>
+                    <div class="absolute z-5 icon" style="color:red;">
+                        <div class=" rounded-[50%]" style="background-color: white; color: black;"><i
+                                class="text-[16] p-2 fa-solid fa-basket-shopping"></i>
+                        </div>
+                        <div class=" rounded-[50%] mt-2" style="background-color: white; color: black;"><i
+                                class="p-2 fa-solid fa-eye"></i></div>
+                    </div>
+                    <div class="text-center px-5">
+                        <div class="font-bold item-dis text-[20px] pt-3 " :class="isClass == item.id ? 'type-2' : ''">{{
+                            item.name }}</div>
+                        <div class="my-2 text-[14px]" :class="isClass == item.id ? 'type-2' : ''"
+                            style="color: #7D8490;">
+                            {{ item.describe }}</div>
+                        <div class="font-bold pb-5 text-[22px]" :class="isClass == item.id ? 'type-2' : ''"
+                            style="color: #F43C22;">${{ item.price }}</div>
+                    </div>
+                </a>
             </div>
             <div class="absolute img-1">
                 <img class=""

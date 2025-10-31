@@ -16,7 +16,7 @@ import 'simplebar/dist/simplebar.css';
 
 import VueParticles from 'vue3-particles';
 import { emitter } from './components/eventBus';
-
+import vue3GoogleLogin from 'vue3-google-login'
 // 🧩 Gộp tất cả route
 const routes = [...ClientRoutes, ...AdminRoutes];
 
@@ -73,13 +73,11 @@ router.beforeEach(async (to, from, next) => {
   next()
 })
 
-
-
-
-
 // 🧩 Khởi tạo app
 const app = createApp(App);
-
+app.use(vue3GoogleLogin, {
+  clientId: '441882610067-96qbijivd26qdr9d3i9007e4e7ho835p.apps.googleusercontent.com'
+})
 app.use(router);
 app.use(Toast, {
   position: 'top-right',

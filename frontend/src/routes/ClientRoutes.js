@@ -21,6 +21,7 @@ import Checkout from "../layout/client/Cart/Checkout.vue";
 import MenuQr from "../layout/client/Shop/MenuQr.vue";
 import Contact from "../layout/client/Page/Contact.vue";
 import CommentHistoryPage from "../layout/client/DetailAccount/CommentHistoryPage.vue";
+import LoginGoogle from "../components/LoginGoogle.vue";
 export default [
     { path: '/', name: 'AuthSuccess', component: Main, meta: { layout: 'client' } },
     { path: '/aboutus', component: AboutUs, meta: { layout: 'client' } },
@@ -38,7 +39,7 @@ export default [
     { path: '/forgot/reset', component: ResetPassword, meta: { layout: 'client' } },
     { path: '/menu', component: MenuQr, meta: { layout: 'client' } },
     { path: '/contact', component: Contact, meta: { layout: 'client' } },
-
+    { path: '/login/success', component: LoginGoogle,meta: { layout: 'client' }},
     {
         path: '/infor',
         component: Detaill,

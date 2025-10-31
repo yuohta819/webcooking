@@ -15,9 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/login")
 public class DBLoginGoogle {
-    @GetMapping("/user")
+    @GetMapping("/success")
     public Map<String, Object> getMethodName(@AuthenticationPrincipal OAuth2User principal) {
-
         try {
             return principal.getAttributes();
         } catch (Exception e) {

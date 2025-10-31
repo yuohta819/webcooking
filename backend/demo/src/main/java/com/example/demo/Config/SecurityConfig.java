@@ -1,6 +1,12 @@
 package com.example.demo.Config;
 
+import com.example.demo.Repository.DataRepositoryAccount;
+import com.example.demo.Repository.UserSessionRepository;
+import com.example.demo.model.DBAccount;
+import com.example.demo.model.DBUserSession;
 import com.example.demo.until.JwtFilter;
+import com.example.demo.until.JwtUntil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,12 +18,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Configuration
@@ -32,6 +41,12 @@ public class SecurityConfig {
 
     @Autowired
     private JwtFilter jwtFilter;
+    @Autowired
+    private DataRepositoryAccount account;
+    @Autowired
+    private JwtUntil jwtService;
+    @Autowired
+    private UserSessionRepository session;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,10 +58,32 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 // 🔐 Cho phép tất cả các request (tùy chỉnh sau nếu cần)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .oauth2Login(oauth -> oauth
+                        .successHandler((request, response, authentication) -> {
+                            OAuth2User user = (OAuth2User) authentication.getPrincipal();
+
+                            String email = user.getAttribute("email");
+                            String name = user.getAttribute("name");
+
+                            DBAccount acc = account.findId(email);
+                            if (acc == null) {
+                                acc = new DBAccount();
+                                acc.setUsername(email);
+                                acc.setName(name);
+                                account.save(acc);
+                            }
+
+                            String jwt = jwtService.generateTokenGoogle(email, acc.getAccountid(), name);
+                            DBUserSession se = new DBUserSession();
+                            DBAccount infor = account.findId(email);
+                            se.setAccountid(infor.getAccountid());
+                            se.setToken(jwt);
+                            session.save(se);
+                            response.sendRedirect("https://webcooking.onrender.com/login/success?token=" + jwt
+                                    + "&email=" + email
+                                    + "&name=" + URLEncoder.encode(name, StandardCharsets.UTF_8));
+                        }))
 
                 // 🚫 Stateless: không dùng session
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

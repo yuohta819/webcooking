@@ -33,7 +33,7 @@ public interface DataRepositoryAccount extends JpaRepository<DBAccount, Long> {
             @Param("time") LocalDateTime time,
             @Param("id") int id);
 
-    @Query("SELECT d FROM DBAccount d WHERE d.username = :email ")
+    @Query("SELECT d FROM DBAccount d WHERE d.username = :email AND d.password != 'Google'")
     Optional<DBAccount> findEmail(@Param("email") String email);
 
     @Query("SELECT d FROM DBAccount d WHERE d.username = :email ")

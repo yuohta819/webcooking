@@ -32,21 +32,20 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String path = request.getRequestURI();
-
         try { // 🚫 Bỏ qua kiểm tra token cho các endpoint công khai
             if (path.startsWith("/api/") || path.startsWith("/category/") ||
                     path.startsWith("/account/") || path.startsWith("/status/") || path.startsWith("/cart/")
                     || path.startsWith("/token/only") || path.startsWith("/login/oauth2/")
-                    || path.startsWith("/admin/check")|| path.startsWith("/number/") 
+                    || path.startsWith("/admin/check") || path.startsWith("/number/")
                     || path.startsWith("/bill/") || path.startsWith("/statistic/")
-                     || path.startsWith("/feedback/")) {
-                        
+                    || path.startsWith("/feedback/") || path.startsWith("/oauth2/")
+                    || path.startsWith("/auth/") || path.contains("account/check")
+                    || path.startsWith("/auth/google")) {
                 chain.doFilter(request, response);
                 return;
             }
 
             final String authHeader = request.getHeader("authorization");
-            String username1 = request.getParameter("account");
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 response.getWriter().write("{\"error\": \"Token invalid or expired\"}");
                 return;
@@ -55,16 +54,6 @@ public class JwtFilter extends OncePerRequestFilter {
             final String token = authHeader.substring(7);
             if (!jwtUtil.validateToken(token)) {
 
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 🔹 1. báo lỗi
-                response.setContentType("application/json;charset=UTF-8"); // 🔹 2. kiểu JSON + encoding
-                response.getWriter().write("{\"error\": \"Token invalid or expired\"}"); // 🔹 3. nội dung JSON
-                response.getWriter().flush(); // 🔹 4. đảm bảo dữ liệu thực sự gửi đi
-                response.getWriter().close(); // kết thúc luồng xuất
-                return; // 🔹 5. dừng filter
-            }
-            if (!jwtUtil.validateToken(token, username1) && 
-            !path.startsWith("/admin/token") && !path.startsWith("/admin/auth/check-permission") &&
-            !path.startsWith("/admin/infor" )) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 🔹 1. báo lỗi
                 response.setContentType("application/json;charset=UTF-8"); // 🔹 2. kiểu JSON + encoding
                 response.getWriter().write("{\"error\": \"Token invalid or expired\"}"); // 🔹 3. nội dung JSON

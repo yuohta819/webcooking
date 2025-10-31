@@ -24,7 +24,8 @@
             <div class="pt-2 text-center mx-10" style="color: #615D5A;">It is a long established fact that
                 a reader will be distracted the readable content of a page when looking at layout
                 the point established fact that</div>
-            <div class="text-center mt-10 relative pb-10">
+            <a href="/shop">
+                <div class="text-center mt-10 relative pb-10">
                 <button class="px-5 py-3">
                     <span class="relative z-10 ">ORDER NOW</span>
                     <div class="box-1"></div>
@@ -32,6 +33,7 @@
                     <i style="background-color: white; color: red;" class="p-1 ml-2 fa-solid fa-arrow-right z-10"></i>
                 </button>
             </div>
+            </a>
         </div>
         <div class="hidden 2xl:block">
             <img src="https://www.ex-coders.com/php-template/fresheat/assets/img/shape/aboutShape1_4.png" alt=""

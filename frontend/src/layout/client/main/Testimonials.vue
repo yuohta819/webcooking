@@ -4,151 +4,122 @@
 </script>
 
 <template>
-    <div style="background-color: #181818;" class="relative">
-        <img class=""
-            src="https://www.ex-coders.com/php-template/fresheat/assets/img/testimonial/testimonialThumb1_1.png" alt="">
-        <img class="absolute top-75 left-90 img"
-            src="https://www.ex-coders.com/php-template/fresheat/assets/img/shape/player.svg" alt="">
-        <img class="absolute right-0 top-55"
-            src="https://www.ex-coders.com/php-template/fresheat/assets/img/shape/testimonialShape1_1.png" alt="">
-        <div class="absolute top-[-40px] left-1/2 -translate-x-1/2 
-         xl:left-auto xl:translate-x-0 xl:right-[17.5rem]">
-            <div class="flex justify-center pt-15 sm:pt-30 font-bold">
-                <img src="https://www.ex-coders.com/php-template/fresheat/assets/img/icon/titleIcon.svg" alt="">
-                <span class="px-1 font-bold text-[14px] text-[#FC7D1F] uppercase">
-                    Testimonials
-                </span>
-                <img src="https://www.ex-coders.com/php-template/fresheat/assets/img/icon/titleIcon.svg" alt="">
-            </div>
+  <section class="relative bg-[#181818] overflow-hidden">
+    <!-- Background image with overlay -->
+    <div class="relative">
+      <img
+        src="https://www.ex-coders.com/php-template/fresheat/assets/img/testimonial/testimonialThumb1_1.png"
+        alt="background"
+        class="w-full h-[500px] sm:h-[600px] lg:h-[700px] object-cover opacity-70"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-[#181818]/90"
+      ></div>
 
-            <h2 class="py-1 text-center pb-10 text-[43px] font-black leading-[50px] text-white mb-5">
-                What our Clients Say
-            </h2>
+      <!-- Play button -->
+      <img
+        src="https://www.ex-coders.com/php-template/fresheat/assets/img/shape/player.svg"
+        alt="play"
+        class="absolute top-1/2 left-1/2 w-16 sm:w-20 lg:w-24 -translate-x-1/2 -translate-y-1/2 hover:scale-110 transition-transform duration-300"
+      />
+
+      <!-- Decorative shape -->
+      <img
+        src="https://www.ex-coders.com/php-template/fresheat/assets/img/shape/testimonialShape1_1.png"
+        alt="decor"
+        class="absolute right-0 top-16 w-28 sm:w-44 lg:w-60 opacity-40 animate-pulse"
+      />
+
+      <!-- Section Title -->
+      <div
+        class="absolute top-6 sm:top-12 left-1/2 -translate-x-1/2 xl:translate-x-0 xl:left-auto xl:right-[18rem] text-center xl:text-left"
+      >
+        <div class="flex justify-center xl:justify-start items-center gap-2">
+          <img
+            src="https://www.ex-coders.com/php-template/fresheat/assets/img/icon/titleIcon.svg"
+            alt=""
+            class="w-4 sm:w-5"
+          />
+          <span class="text-[#FC7D1F] font-semibold text-sm uppercase tracking-wider"
+            >Testimonials</span
+          >
+          <img
+            src="https://www.ex-coders.com/php-template/fresheat/assets/img/icon/titleIcon.svg"
+            alt=""
+            class="w-4 sm:w-5"
+          />
         </div>
-        <div style="background-color: white; border-radius: 30px;" class="absolute top-60  p-11 
-         sm:left-1/2 sm:-translate-x-1/2 
-         xl:left-auto xl:right-40 xl:translate-x-0 z-6 ">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center ">
-                    <img style="border-radius: 50%;"
-                        src="https://www.ex-coders.com/php-template/fresheat/assets/img/testimonial/testimonialProfile1_1.png"
-                        alt="">
-                    <div class="pl-5">
-                        <div class="font-bold text-[24px]">Albert Flores</div>
-                        <div class="pb-1">Web Designer</div>
-                        <div>
-                            <img src="https://www.ex-coders.com/php-template/fresheat/assets/img/icon/star.svg" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <img src="https://www.ex-coders.com/php-template/fresheat/assets/img/icon/quote.svg" alt="">
-                </div>
+        <h2
+          class="text-white font-black text-2xl sm:text-4xl lg:text-5xl leading-tight mt-2 drop-shadow-lg"
+        >
+          What Our Clients Say
+        </h2>
+      </div>
+
+      <!-- Testimonial Card -->
+      <div
+        class="absolute bottom-[-6rem] sm:bottom-[-8rem] left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-10 w-[90%] sm:w-[70%] lg:w-[480px] transition-all hover:shadow-[#FC7D1F]/40 hover:scale-[1.02]"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <img
+              src="https://www.ex-coders.com/php-template/fresheat/assets/img/testimonial/testimonialProfile1_1.png"
+              alt="profile"
+              class="w-16 h-16 rounded-full object-cover"
+            />
+            <div class="pl-4">
+              <div class="font-bold text-lg sm:text-xl text-gray-800">
+                Albert Flores
+              </div>
+              <div class="text-gray-500 text-sm">Web Designer</div>
+              <img
+                src="https://www.ex-coders.com/php-template/fresheat/assets/img/icon/star.svg"
+                alt="stars"
+                class="mt-1 w-20"
+              />
             </div>
-            <div class="pt-5 text-[23px] items-justify" style="color: #6A676C;">Penatibus magnis dis point parturient
-                montes nascetur
-                ridiculus mus Ut id <br>
-                lorem ac enim the vestibulum blandit nec sit amet felis. <br>Fusce quis diam
-                odio Cras mattis mi quis tincidunt</div>
+          </div>
+          <img
+            src="https://www.ex-coders.com/php-template/fresheat/assets/img/icon/quote.svg"
+            alt="quote"
+            class="w-8 sm:w-10 opacity-70"
+          />
         </div>
-        <div class="marquee py-20 relative" style="background-color: #181818;">
-            <div class="marquee-content  mt-60 xl:mt-0">
-                <span class="text-[80px] box-3 font-extrabold mx-10 item" style="text-transform: uppercase; ">
-                    chicken pizza
-                </span>
-                <span class="text-[80px] box-3 font-extrabold mx-10 item" style="text-transform: uppercase; ">
-                    GRILLED CHICKEN
-                </span>
-                <span class="text-[80px] box-3 font-extrabold mx-10 item" style="text-transform: uppercase; ">
-                    BURGER
-                </span>
-                <span class="text-[80px] box-3 font-extrabold mx-10 item" style="text-transform: uppercase; ">
-                    FRESH PASTA
-                </span>
-                <span class="text-[80px] box-3 font-extrabold mx-10 item" style="text-transform: uppercase; ">
-                    chicken pizza
-                </span>
-                <span class="text-[80px] box-3 font-extrabold mx-10 item" style="text-transform: uppercase; ">
-                    GRILLED CHICKEN
-                </span>
-                <span class="text-[80px] box-3 font-extrabold mx-10 item" style="text-transform: uppercase; ">
-                    BURGER
-                </span>
-                <span class="text-[80px] box-3 font-extrabold mx-10 item" style="text-transform: uppercase; ">
-                    FRESH PASTA
-                </span>
-            </div>
-        </div>
+        <p class="mt-5 text-gray-600 text-base sm:text-lg leading-relaxed">
+          “Penatibus magnis dis parturient montes nascetur ridiculus mus. Ut id
+          lorem ac enim vestibulum blandit nec sit amet felis.”
+        </p>
+      </div>
     </div>
 
+    <!-- Moving marquee -->
+    <div class="mt-[300px] sm:mt-[350px] lg:mt-[400px] bg-[#181818] py-16 overflow-hidden relative">
+      <div
+        class="marquee-content flex whitespace-nowrap animate-marquee gap-16"
+      >
+        <span
+          v-for="text in ['chicken pizza','grilled chicken','burger','fresh pasta']"
+          :key="text"
+          class="text-[40px] sm:text-[70px] font-extrabold uppercase text-white opacity-15 tracking-wider"
+        >
+          {{ text }}
+        </span>
+      </div>
+    </div>
+  </section>
 </template>
+
 <style scoped>
-.img {
-    animation: spin 4s linear infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-.marquee {
-    overflow: hidden;
-    background: #F4F1EA;
-    opacity: 1;
-}
-
-.marquee-content {
-    display: inline-flex;
-    align-items: center;
-    animation: marquee 25s linear infinite;
-    flex-shrink: 0;
-}
-
-.marquee-content .item {
-    font-size: 80px;
-    display: inline-block;
-    font-weight: 800;
-    text-transform: uppercase;
-    position: relative;
-    flex-shrink: 0;
-    color: #BCB8B9;
-    transition: color 0.3s ease;
-    cursor: pointer;
-}
-
-.marquee-content .item:hover {
-    color: #EB0029;
-    opacity: 1;
-}
-
-.marquee-content .item::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 3px;
-    background: #EB0029;
-    transition: width 0.5s ease;
-}
-
-.marquee-content .item:hover::after {
-    width: 100%;
-}
-
 @keyframes marquee {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(-50%);
-    }
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 20s linear infinite;
 }
 </style>
+

@@ -48,39 +48,57 @@ const content = ['', '', '', 'CHICKEN PIZZA', '', 'CHICKEN FRY']
             </div>
             <div class="box mx-27"></div>
             <transition>
-                <div class="flex justify-around py-15 md:mx-27" :key="check">
-                    <div class="w-140 ">
-                        <div v-for="item in data" :key="item.id">
-                            <div class="flex items-center justify-between mb-7">
-                                <div class="flex items-center">
-                                    <img :src=item.img alt="" width="80">
-                                    <div class="pl-10">
-                                        <div class="text-[27px] font-bold cursor-pointer"
-                                            :class="item.id == 1 && check == 1 ? 'box-1' : ''">{{ item.name }}
-                                        </div>
-                                        <div class="text-[17px]" style="color: #938B90;">{{ item.describe }}</div>
-                                    </div>
-                                </div>
-                                <div class="pr-5 font-semibold text-[17px]">${{ item.price }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="w-140 pl-8 2xl:block hidden">
-                        <div v-for="item in data1" :key="item.id">
-                            <div class="flex items-center justify-between mb-7">
-                                <div class="flex items-center">
-                                    <img :src=item.img alt="" width="80">
-                                    <div class="pl-10">
-                                        <div class="text-[27px] font-bold cursor-pointer">{{ item.name }}</div>
-                                        <div class="text-[17px]" style="color: #938B90;">{{ item.describe }}</div>
-                                    </div>
-                                </div>
-                                <div class="pr-5 font-semibold text-[17px]">${{ item.price }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </transition>
+  <div
+    class="flex flex-col xl:flex-row justify-around items-start gap-10 py-10 md:py-14 px-4 md:px-10 lg:px-20"
+    :key="check"
+  >
+    <!-- Cột bên trái -->
+    <div class="w-full xl:w-[45%]">
+      <div
+        v-for="item in data"
+        :key="item.id"
+        class="flex items-center justify-between mb-6 md:mb-8 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-4 md:p-5"
+      >
+        <a :href="`/detail/${item.id}`">
+            <div class="flex items-center gap-4 md:gap-6">
+          <img :src="item.img" alt="" class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover" />
+          <div>
+            <div
+              class="text-lg md:text-2xl font-bold cursor-pointer transition-colors duration-200"
+              :class="item.id == 1 && check == 1 ? 'text-[#FC7D1F]' : 'text-gray-900'"
+            >
+              {{ item.name }}
+            </div>
+            <div class="text-sm md:text-base text-gray-500">{{ item.describe }}</div>
+          </div>
+        </div>
+        </a>
+        <div class="text-base md:text-lg font-semibold text-[#F43C22]">${{ item.price }}</div>
+      </div>
+    </div>
+
+    <!-- Cột bên phải (ẩn trên màn hình nhỏ) -->
+    <div class="hidden 2xl:block w-[45%] pl-0 xl:pl-8">
+      <div
+        v-for="item in data1"
+        :key="item.id"
+        class="flex items-center justify-between mb-6 md:mb-8 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-4 md:p-5"
+      >
+        <div class="flex items-center gap-4 md:gap-6">
+          <img :src="item.img" alt="" class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover" />
+          <div>
+            <div class="text-lg md:text-2xl font-bold text-gray-900 cursor-pointer">
+              {{ item.name }}
+            </div>
+            <div class="text-sm md:text-base text-gray-500">{{ item.describe }}</div>
+          </div>
+        </div>
+        <div class="text-base md:text-lg font-semibold text-[#F43C22]">${{ item.price }}</div>
+      </div>
+    </div>
+  </div>
+</transition>
+
         </div>
     </div>
     <div style="background-color: #F4F1EA;">

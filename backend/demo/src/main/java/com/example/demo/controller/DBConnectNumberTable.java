@@ -63,7 +63,6 @@ public class DBConnectNumberTable {
         Integer result = orderRepository.getNumber(accountid);
         
         if (result == null) {
-            System.out.println(result + "test");
             orderRepository.assignTableToCustomer(accountid, people);
         } 
 

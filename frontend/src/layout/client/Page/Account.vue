@@ -3,13 +3,13 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useToast } from "vue-toastification";
 import { useRouter } from 'vue-router';
-
+import { GoogleLogin } from 'vue3-google-login'
 const account = ref('');
 const password = ref('');
 const remember = ref(false); // ✅ trạng thái checkbox
 const toast = useToast();
 const router = useRouter();
-
+let google
 // ✅ Tự động đăng nhập nếu có dữ liệu trong localStorage
 onMounted(() => {
     const savedAccount = localStorage.getItem("account");
@@ -52,7 +52,7 @@ async function handleSubmit() {
             params: {
                 // account: account.value,
                 // password: password.value
-                account: "loctramcam12@gmail.com",
+                account: "thunhan12@gmail.com",
                 password: "12345"
             }
         });
@@ -102,10 +102,6 @@ function handleAccount(name) {
 
 function handlePassword(pass) {
     password.value = pass;
-}
-
-function handleToken() {
-    window.location.href = `${import.meta.env.VITE_API_URL_BACKEND}/oauth2/authorization/google`;
 }
 </script>
 
@@ -163,20 +159,20 @@ function handleToken() {
                             <div class="box-2"></div>
                         </div>
                     </div>
-
-                    <div class="my-5 relative" @click="handleToken">
-                        <div class="py-3 text-center button rounded-[50px] flex items-center justify-around px-39"
-                            style="background: white; color: white;">
-                            <img class="relative z-3"
-                                src="https://www.ex-coders.com/php-template/fresheat/assets/img/logo/googleLogo.png"
-                                alt="">
-                            <div class="font-bold text-[14px] relative z-3 content 2xl:block hidden">
-                                Log In With Google
+                    <a href="http://localhost:8080/oauth2/authorization/google">
+                        <div class="my-5 relative">
+                            <div class="py-3 text-center button rounded-[50px] flex items-center justify-around px-39"
+                                style="background: white; color: white;"> <img class="relative z-3"
+                                    src="https://www.ex-coders.com/php-template/fresheat/assets/img/logo/googleLogo.png"
+                                    alt="">
+                                <div class="font-bold text-[14px] relative z-3 content 2xl:block hidden"> Log In With
+                                    Google
+                                </div>
+                                <div class="box-1"></div>
+                                <div class="box-2"></div>
                             </div>
-                            <div class="box-1"></div>
-                            <div class="box-2"></div>
                         </div>
-                    </div>
+                    </a>
 
                     <div class="my-10 text-center">
                         <span>Don’t have an account? </span>

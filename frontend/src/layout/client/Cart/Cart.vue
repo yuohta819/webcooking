@@ -22,6 +22,10 @@ onMounted(async () => {
                 },
             }
         )
+        if (res.data.cart.length === 0) {
+  router.push("/");
+}
+
         if (res.data === '') {
             toast.error("Token expired or invalid!!!")
             localStorage.clear()

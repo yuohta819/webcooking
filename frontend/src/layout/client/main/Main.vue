@@ -39,6 +39,5 @@ if (!account) {
     <div>
         <OurChefe />
     </div>
-    <Testimonials />
     <LastestNew />
 </template>

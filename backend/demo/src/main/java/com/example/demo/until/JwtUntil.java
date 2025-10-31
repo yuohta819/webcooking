@@ -33,6 +33,21 @@ public class JwtUntil {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
+    // Tạo token client
+    public String generateTokenGoogle(String account, Long accountId, String username) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("accountid", accountId);
+        claims.put("account", account);
+        claims.put("name", username);
+        claims.put("provider", "Google");
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(account)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
  // Tạo token
     public String generateTokenAdmin(String account, Long accountId, String username, boolean canAdd, boolean canEdit, boolean canDelete) {
         Map<String, Object> claims = new HashMap<>();

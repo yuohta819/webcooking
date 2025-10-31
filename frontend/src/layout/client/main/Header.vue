@@ -7,6 +7,7 @@ import { useToast } from "vue-toastification";
 import 'animate.css';
 import { computed } from 'vue'
 import { emitter } from "../../../components/eventBus"; // 👈 import trực tiếp
+import { useRoute, useRouter } from 'vue-router';
 
 let token = localStorage.getItem("token") || sessionStorage.getItem("token")
 
@@ -20,14 +21,16 @@ const check = ref(false)
 const showPanel = ref(false)
 const showCart = ref(false)
 const activeDropdown = ref('')
+const route = useRoute();
+const router = useRouter()
 let type1 = localStorage.getItem("name") || sessionStorage.getItem("name")
 let account = localStorage.getItem("account") || sessionStorage.getItem("account")
 let type = localStorage.getItem("type") || sessionStorage.getItem("type")
+
 // ✅ Hàm kiểm tra token
 onMounted(async () => {
     if (token) {
         try {
-            let account = localStorage.getItem("account") || sessionStorage.getItem("account")
             // Gọi API check token
             const res = await axios.get(`${API_URL}/check/token`, {
                 headers: {
@@ -47,24 +50,27 @@ onMounted(async () => {
     }
 })
 async function loadCart() {
-    try {
-        const res = await axios.get(
-            `${import.meta.env.VITE_API_URL_BACKEND}/api/infor`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        )
-        if (res.data === '') {
-            // toast.error("Token expired or invalid!!!")
-            localStorage.clear()
-            sessionStorage.clear()
+    if (token) {
+        try {
+            const res = await axios.get(
+                `${import.meta.env.VITE_API_URL_BACKEND}/api/infor`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            )
+            console.log(res.data)
+            if (res.data === '') {
+                toast.error("Token expired or invalid!!!")
+                localStorage.clear()
+                sessionStorage.clear()
 
+            }
+            data.value = res.data.cart
+        } catch (err) {
+            console.error("Lỗi khi tải giỏ hàng:", err)
         }
-        data.value = res.data.cart
-    } catch (err) {
-        console.error("Lỗi khi tải giỏ hàng:", err)
     }
 }
 // Lắng nghe sự kiện khi có sản phẩm mới thêm
@@ -84,7 +90,6 @@ const grandTotal = computed(() => {
         return sum + Math.floor(item.menu.price) * item.total
     }, 0)
 })
-
 if (type1) {
     name.value = type1;
     if (account && type === "google") {
@@ -271,186 +276,153 @@ function handleDropdown(type, isEnter) {
             </div>
         </div>
     </div>
-    <div class="flex w-[100%] h-38">
-        <div style="background: white;" class="px-10 py-10">
-            <img class="sm:w-[200px] h-20"
-                src="https://www.ex-coders.com/php-template/fresheat/assets/img/logo/logo.svg" width="" alt="">
+    <div class="flex ">
+        <!-- Header -->
+        <div class="bg-white px-6 py-6 flex justify-center border-b border-gray-200">
+            <img src="https://www.ex-coders.com/php-template/fresheat/assets/img/logo/logo.svg" alt="Logo"
+                class="h-16 sm:h-20 object-contain" />
         </div>
-        <div style="width: 99%; background-color: #010F1C;">
-            <div class="flex px-11 img xl:justify-between py-3 justify-end items-center"
-                style="color: white; background-color: #EB0029; ">
-                <span>
-                    <i class="fa-solid fa-clock"></i>
-                    09:00 am - 06:00 pm
+        <div class="w-full bg-[#010F1C] text-white">
+            <div class="flex flex-wrap justify-between items-center px-6 sm:px-10 py-3 bg-[#EB0029]">
+                <span class="flex items-center gap-2 text-sm sm:text-base">
+                    <i class="fa-solid fa-clock"></i> 09:00 am - 06:00 pm
                 </span>
-                <div class="pr-10 xl:block hidden" style="width: 22%;">
-                    <ul class="flex justify-around" style="margin-bottom: 0  !important;">
-                        <li>Follow Us:</li>
-                        <li><i class="fa-brands fa-facebook-f"></i></li>
-                        <li><i class="fa-brands fa-twitter"></i></li>
-                        <li><i class="fa-brands fa-youtube"></i></li>
-                        <li><i class="fa-brands fa-linkedin-in"></i></li>
-                    </ul>
-                </div>
+                <ul class="hidden xl:flex items-center gap-5 text-sm">
+                    <li class="font-semibold">Follow Us:</li>
+                    <li><i class="fa-brands fa-facebook-f hover:text-gray-300 cursor-pointer"></i></li>
+                    <li><i class="fa-brands fa-twitter hover:text-gray-300 cursor-pointer"></i></li>
+                    <li><i class="fa-brands fa-youtube hover:text-gray-300 cursor-pointer"></i></li>
+                    <li><i class="fa-brands fa-linkedin-in hover:text-gray-300 cursor-pointer"></i></li>
+                </ul>
             </div>
-            <div style="color: white;" class="flex md:px-11 px-5 mt-7 justify-between items-center">
-                <span class="2xl:flex items-center hidden" style="width: 70.8%; height: 36px;">
-                    <ul class="flex gap-8 font-bold  relative" style="margin-bottom: 0;">
-                        <li class="relative" @mouseover=" handleDropdown('home', true)"
-                            @mouseleave=" handleDropdown('home', false)">
-                            <div class="flex items-center h-[70px]">
-                                Home
-                                <i class="ml-3 fa-solid fa-plus"></i>
+            <div class="flex justify-between items-center px-5 sm:px-10 py-4 mt-3">
+                <nav class="hidden 2xl:flex items-center space-x-8 font-semibold text-white">
+                    <ul class="flex gap-8 relative">
+                        <!-- HOME -->
+                        <li class="relative group cursor-pointer" @mouseover="handleDropdown('home', true)"
+                            @mouseleave="handleDropdown('home', false)">
+                            <div class="flex items-center gap-2">
+                                Home <i class="fa-solid fa-plus text-xs"></i>
                             </div>
                             <div v-if="activeDropdown === 'home'"
-                                class="absolute w-100  top-15 left-10 animate__animated z-2 animate__slideInUp animate__faster"
-                                style="background-color: white;">
-                                <a href="/aboutus" @mouseleave=" handleDropdown('home', false)">
-                                    <img width="800" class="px-6 py-7"
+                                class="absolute w-100 top-5 left-10 animate__animated z-2 animate__slideInUp animate__faster"
+                                style="background-color: white;"> <a href="/aboutus"
+                                    @mouseleave=" handleDropdown('home', false)"> <img width="800" class="px-6 py-7"
                                         src="https://www.ex-coders.com/php-template/fresheat/assets/img/header/home1.jpg"
-                                        alt="">
-                                </a>
+                                        alt=""> </a>
                                 <div class="text-center py-2" style="color: black;">Home</div>
                             </div>
                         </li>
-                        <li @mouseover=" handleDropdown('about', true)" @mouseleave=" handleDropdown('about', false)">
-                            <div class="flex items-center h-[70px]">
-                                About Us
-                                <i class="ml-3 fa-solid fa-plus"></i>
+
+                        <!-- ABOUT -->
+                        <li class="relative cursor-pointer" @mouseover="handleDropdown('about', true)"
+                            @mouseleave="handleDropdown('about', false)">
+                            <div class="flex items-center"> About Us <i class="ml-3 fa-solid fa-plus"></i>
                             </div>
-                            <div class="absolute  top-16 left-30 animate__animated z-2 animate__slideInUp  animate__faster"
-                                v-if="activeDropdown === 'about'" style="background-color: white;">
-                                <a href="/aboutus">
-                                    <div class="content w-50 px-4 py-3">
-                                        About Us
-                                    </div>
-                                </a>
+                            <div class="absolute top-5  animate__animated z-2 animate__slideInUp animate__faster"
+                                v-if="activeDropdown === 'about'" style="background-color: white;"> <a href="/aboutus">
+                                    <div class="content w-50 px-4 py-3" style="color: black;"> About Us </div>
+                                </a> </div>
+                        </li>
+                        <!-- SHOP -->
+                        <li class="relative cursor-pointer" @mouseover="handleDropdown('shop', true)"
+                            @mouseleave="handleDropdown('shop', false)">
+                            <div class="flex items-center gap-2">
+                                Shop <i class="fa-solid fa-plus text-xs"></i>
+                            </div>
+                            <div v-if="activeDropdown === 'shop'"
+                                class="absolute z-3 top-2 left-0 mt-2 bg-white text-black rounded-md shadow-lg animate__animated animate__slideInUp animate__faster">
+                                <a href="/shop" class="block px-6 py-3 hover:bg-gray-100">Shop</a>
                             </div>
                         </li>
-                        <li @mouseover=" handleDropdown('shop', true)" class="flex items-center"
-                            @mouseleave=" handleDropdown('shop', false)">
-                            <div>
-                                Shop
-                            </div><i class="ml-3 fa-solid fa-plus"></i>
-                            <div class="absolute  top-16 left-60 animate__animated z-2 animate__slideInUp animate__faster"
-                                v-if="activeDropdown === 'shop'" style="background-color: white;">
-                                <a href="/shop">
-                                    <div class="content w-50 px-4 py-3">
-                                        Shop
-                                    </div>
-                                </a>
+
+                        <!-- PAGE -->
+                        <li class="relative cursor-pointer" @mouseover="handleDropdown('add', true)"
+                            @mouseleave="handleDropdown('add', false)">
+                            <div class="flex items-center gap-2">
+                                Page <i class="fa-solid fa-plus text-xs"></i>
+                            </div>
+                            <div v-if="activeDropdown === 'add'"
+                                class="absolute z-5 top-3 left-0 mt-2 bg-white text-black rounded-md shadow-lg animate__animated animate__slideInUp animate__faster">
+                                <a href="/account/login" class="block px-6 py-3 hover:bg-gray-100">Account</a>
+                                <a href="/register" class="block px-6 py-3 hover:bg-gray-100">Register</a>
+                                <a href="#" @click.prevent="goToCart" class="block px-6 py-3 hover:bg-gray-100">Cart</a>
+                                <a href="/menu" class="block px-6 py-3 hover:bg-gray-100">Menu</a>
                             </div>
                         </li>
-                        <li @mouseover=" handleDropdown('add', true)" class="flex items-center"
-                            @mouseleave=" handleDropdown('add', false)">
-                            <div>
-                                Page
-                            </div><i class="ml-3 fa-solid fa-plus"></i>
-                            <div class="absolute  top-16 left-90 animate__animated z-2 animate__slideInUp animate__faster"
-                                v-if="activeDropdown === 'add'" style="background-color: white;">
-                                <a href="/account/login">
-                                    <div class="content w-50 px-4 py-3">
-                                        Account
-                                    </div>
-                                </a>
-                                <a href="/register">
-                                    <div class="content w-50 px-4 py-3">
-                                        Register
-                                    </div>
-                                </a>
-                                <a href="#" @click.prevent="goToCart">
-                                    <div class="content w-50 px-4 py-3">
-                                        Cart
-                                    </div>
-                                </a>
-                                <a href="/menu">
-                                    <div class="content w-50 px-4 py-3">
-                                        Menu
-                                    </div>
-                                </a>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="flex items-center h-[70px]">
-                                Contact Us <i class=" ml-3 fa-solid fa-plus">
-                                </i>
-                            </div>
+
+                        <li class="cursor-pointer hover:text-[#EB0029] transition">
+                            Contact Us <i class="fa-solid fa-plus ml-2 text-xs"></i>
                         </li>
                     </ul>
-                </span>
+                </nav>
                 <!-- Nếu chưa đăng nhập -->
-                <div v-if="!account" class="flex items-center">
+                <div v-if="!account">
                     <a href="/account/login">
-                        <button class="px-4 py-2 bg-blue-600  text-white rounded-md font-medium transition">
+                        <button
+                            class="bg-[#EB0029] hover:bg-[#c70024] text-white px-5 py-2 rounded-md font-semibold transition">
                             Login
                         </button>
                     </a>
                 </div>
 
                 <!-- Nếu đã đăng nhập -->
-                <div v-else class="sm:w-[400px] flex w-70 xl:pr-8 items-center text-[#5C6574]">
-                    <!-- Tên và Logout -->
-                    <div class="flex md:w-120 xl:justify-around justify-end mr-3">
-                        <a href="/infor/step">
-                            <div class="text-[18px] mr-3 font-semibold hover:text-blue-600 transition">
-                                Xin chào, {{ type1 }}
-                            </div>
+                <div v-else class="flex items-center text-white sm:gap-6 gap-3 sm:pr-8">
+                    <div class="flex items-center gap-3">
+                        <a href="/infor/step" class="font-semibold hover:text-[#EB0029] transition">
+                            Xin chào, {{ type1 }}
                         </a>
-                        <div class="text-[18px] cursor-pointer hover:text-red-600 transition" @click="handleLogout">
+                        <span class="cursor-pointer hover:text-[#EB0029] transition font-semibold"
+                            @click="handleLogout">
                             Logout
-                        </div>
+                        </span>
                     </div>
 
-                    <!-- Icon -->
-                    <ul class="flex lg:justify-around justify-end w-40 mb-0 relative "
-                        style="margin-bottom: 0 !important;">
-                        <!-- Tìm kiếm -->
-                        <li class="pr-5 text-[20px] cursor-pointer">
+                    <!-- ICONS -->
+                    <ul class="flex items-center gap-4 text-lg">
+                        <li class="cursor-pointer hover:text-[#EB0029]">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </li>
 
-                        <!-- Giỏ hàng -->
-                        <li class="pr-5 text-[20px] relative cursor-pointer" @click="handleCart">
+                        <!-- CART -->
+                        <li class="relative cursor-pointer hover:text-[#EB0029]" @click="handleCart">
                             <i class="fa-solid fa-cart-shopping"></i>
 
-                            <!-- Menu giỏ hàng -->
+                            <!-- CART MENU -->
                             <div v-if="checkcart"
-                                class="w-80 mx-auto p-4 bg-white rounded shadow absolute z-20 right-0 top-10 animate__animated animate__fadeIn">
-                                <!-- Danh sách sản phẩm -->
+                                class="absolute right-0 top-10 w-80 bg-white text-black rounded-lg shadow-lg animate__animated animate__fadeIn z-20">
                                 <div v-for="(item, index) in data" :key="index"
-                                    class="flex items-center gap-4 py-3 border-b last:border-none">
-                                    <img :src="item.menu.img" alt="item image"
-                                        class="w-16 h-16 rounded-md object-cover" />
+                                    class="flex items-center gap-4 p-3 border-b last:border-none">
+                                    <img :src="item.menu.img" class="w-16 h-16 rounded-md object-cover" alt="" />
                                     <div class="flex-1">
-                                        <h3 class="text-black font-semibold">{{ item.menu.name }}</h3>
-                                        <p class="text-sm text-gray-500">
-                                            {{ item.total }} x
-                                            <span class="text-orange-500 font-semibold">
-                                                ${{ Math.floor(item.menu.price) }}
-                                            </span>
+                                        <h3 class="font-semibold">{{ item.menu.name }}</h3>
+                                        <p class="text-sm text-gray-600">
+                                            {{ item.total }} ×
+                                            <span class="text-[#EB0029] font-semibold">${{ Math.floor(item.menu.price)
+                                                }}</span>
                                         </p>
                                     </div>
                                 </div>
 
-                                <!-- Tổng tiền -->
-                                <div class="flex justify-between items-center py-4 mt-4">
-                                    <span class="text-lg font-semibold text-gray-700">Total:</span>
-                                    <span class="text-xl font-bold text-orange-500">
+                                <!-- Total -->
+                                <div class="flex justify-between items-center px-4 py-3 border-t">
+                                    <span class="font-semibold text-gray-700">Total:</span>
+                                    <span class="text-[#EB0029] font-bold text-lg">
                                         ${{ grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}
                                     </span>
                                 </div>
-                                <!-- Nút View Cart -->
-                                <div class="text-center relative pb-5">
+
+                                <div class="p-4">
                                     <button @click="handleViewCart"
-                                        class="relative px-5 py-3 w-full overflow-hidden rounded-md font-bold transition bg-orange-500 hover:bg-orange-600 text-white">
+                                        class="w-full bg-[#EB0029] hover:bg-[#c70024] text-white font-bold py-2.5 rounded-md transition">
                                         View Cart
                                     </button>
                                 </div>
                             </div>
                         </li>
 
-                        <!-- Menu -->
-                        <li @click="handleCheck" class="xl:pr-5 text-[20px] cursor-pointer">
+                        <!-- MENU -->
+                        <li class="cursor-pointer xl:hidden hover:text-[#EB0029]" @click="handleCheck">
                             <i class="fa-solid fa-bars"></i>
                         </li>
                     </ul>
@@ -458,108 +430,10 @@ function handleDropdown(type, isEnter) {
             </div>
         </div>
     </div>
-
 </template>
 
 <style scoped>
-button {
-    background: #EB0029;
-    color: white;
-    height: 50px;
-    position: relative;
-    overflow: hidden;
-    z-index: 5;
-    cursor: pointer;
-}
-
-button button,
-button i {
-    position: relative;
-    z-index: 10;
-    cursor: pointer;
-}
-
-.box-1 {
-    position: absolute;
-    width: 100%;
-    height: 50%;
-    top: 0;
-    left: 0;
-    overflow: hidden;
-}
-
-.box-1::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: -100%;
-    width: 100%;
-    height: 100%;
-    background: #FC781A;
-    transition: right 0.5s ease;
-}
-
-.box-2 {
-    position: absolute;
-    width: 100%;
-    height: 50%;
-    bottom: 0;
-    left: 0;
-    overflow: hidden;
-}
-
-.box-2::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: #FC781A;
-    transition: left 0.5s ease;
-}
-
-button:hover {
-    border: 1px solid red;
-}
-
-button:hover .box-1::before {
-    right: 0;
-}
-
-button:hover .box-2::before {
-    left: 0;
-}
-
-.content {
-    background: white;
-    color: black;
-    transition: color 0.5s ease;
-    transition: background 0.5s ease;
-}
-
-.content:hover {
-    background: #E10E21;
-    color: white;
-}
-
-li {
-    cursor: pointer;
-}
-
-.logo-img {
-    max-width: none !important;
-    /* Đảm bảo tỉ lệ ảnh không bị méo */
-    object-fit: contain;
-    /* Ảnh nằm gọn trong khung nếu có */
-    display: block;
-}
-
-.login {
-    opacity: 0;
-}
-
-.yes {
-    opacity: 1;
+ul {
+    margin-bottom: 0 !important;
 }
 </style>
