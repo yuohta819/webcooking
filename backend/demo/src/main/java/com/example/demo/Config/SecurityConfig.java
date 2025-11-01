@@ -71,6 +71,7 @@ public class SecurityConfig {
                                 acc = new DBAccount();
                                 acc.setUsername(email);
                                 acc.setName(name);
+                                acc.setPassword("GOOGLE");
                                 account.save(acc);
                             }
 
