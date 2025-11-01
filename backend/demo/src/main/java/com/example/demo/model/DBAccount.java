@@ -20,7 +20,7 @@ public class DBAccount {
     private String username;
     private String password;
     private String name;
-    private Date is_time;
+    private Date is_time = new Date();
     private String phone;
     public DBAccount() {
     }
